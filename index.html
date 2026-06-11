@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0C0808">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IMPOSTA">
+<title>IMPOSTA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;IMPOSTA&quot;,&quot;short_name&quot;:&quot;IMPOSTA&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%230C0808&quot;,&quot;theme_color&quot;:&quot;%230C0808&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230C0808'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='300' font-weight='bold' fill='%23E8B84B'>I</text></svg>&quot;,&quot;sizes&quot;:&quot;any&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
+<style>
+:root{
+  --bg:#0C0808;--s1:#181010;--s2:#201515;--s3:#2C1C1C;
+  --glift:linear-gradient(180deg,#1E1414 0%,#151010 100%);
+  --gold:#E8B84B;--gd:rgba(232,184,75,.13);
+  --red:#C63535;--rd:rgba(198,53,53,.13);
+  --blue:#4A8FD4;--bd:rgba(74,143,212,.11);
+  --txt:#F2ECE4;--t2:#9A8878;--t3:#6A5848;
+  --bdr:rgba(242,236,228,.10);--bdr2:rgba(242,236,228,.20);
+  --fd:'Bebas Neue',sans-serif;
+  --fb:'DM Sans',-apple-system,sans-serif;
+  --r:12px;--rl:20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{color:var(--txt);font-family:var(--fb);font-size:15px;line-height:1.5}
+#app{height:100%;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.scr{min-height:100%;padding:52px 20px 44px;max-width:440px;margin:0 auto;display:flex;flex-direction:column}
+
+/* Buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 20px;border:none;border-radius:var(--r);font-family:var(--fb);font-size:15px;font-weight:600;cursor:pointer;transition:opacity .12s,transform .1s;-webkit-user-select:none;user-select:none;min-height:52px;text-decoration:none}
+.btn:active{opacity:.72;transform:scale(.97)}
+.btn:disabled{opacity:.28;pointer-events:none}
+.btn-gold{background:var(--gold);color:#0C0808;box-shadow:0 2px 20px rgba(232,184,75,.18)}
+.btn-red{background:var(--red);color:#fff}
+.btn-surf{background:var(--s2);color:var(--txt);border:1px solid var(--bdr2)}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--bdr)}
+.btn-sm{padding:10px 16px;font-size:13px;min-height:40px}
+
+/* Input */
+.inp{width:100%;background:var(--s2);border:1px solid var(--bdr2);border-radius:var(--r);padding:14px 16px;color:var(--txt);font-family:var(--fb);font-size:15px;outline:none;min-height:52px}
+.inp:focus{border-color:var(--gold)}
+.inp::placeholder{color:var(--t3)}
+
+/* Back */
+.bk{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--t2);font-family:var(--fb);font-size:14px;cursor:pointer;padding:0;margin-bottom:24px;-webkit-user-select:none;user-select:none}
+.bk:active{opacity:.6}
+
+/* Screen header */
+.sh{font-family:var(--fd);font-size:40px;line-height:1;letter-spacing:.03em;margin-bottom:6px}
+.ss{font-size:13px;color:var(--t2);margin-bottom:28px}
+
+/* Stacks / spacing */
+.stk{display:flex;flex-direction:column}
+.g8{gap:8px}.g12{gap:12px}.g16{gap:16px}.g20{gap:20px}
+.sp{flex:1}
+
+/* Step indicator */
+.steps{display:flex;gap:6px;margin-bottom:28px}
+.step{height:3px;flex:1;border-radius:2px;background:var(--bdr2)}
+.step.on{background:var(--gold);box-shadow:0 0 8px rgba(232,184,75,.4)}.step.dn{background:var(--gold);opacity:.35}
+
+/* Icon button */
+.ico{width:34px;height:34px;border-radius:50%;background:var(--s3);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:13px;flex-shrink:0;-webkit-user-select:none;user-select:none}
+.ico:active{opacity:.6}
+
+/* Dot / avatar */
+.dot{border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fd);color:#0C0808;font-weight:700}
+.dot-lg{width:38px;height:38px;font-size:18px}
+.dot-md{width:32px;height:32px;font-size:15px}
+.dot-sm{width:28px;height:28px;font-size:13px}
+.dot-v{width:40px;height:40px;font-size:20px}
+
+/* Color swatches */
+.col-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:10px}
+.sw{width:100%;aspect-ratio:1;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .1s}
+.sw.sel{border-color:white;transform:scale(1.15)}
+.sw:active{transform:scale(.9)}
+
+/* Edit box */
+.ebox{background:var(--s2);border:1px solid var(--bdr2);border-radius:var(--r);padding:16px;margin-top:6px}
+
+/* Notice */
+.note{background:var(--s2);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;font-size:13px;color:var(--t2);line-height:1.5}
+
+/* Divider */
+.div{height:1px;background:var(--bdr);margin:16px 0}
+
+/* HOME */
+.logo{font-family:var(--fd);font-size:76px;line-height:1;letter-spacing:.05em;color:var(--gold);text-shadow:0 0 60px rgba(232,184,75,.3)}
+.tagline{font-size:12px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin:6px 0 38px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.mc{background:var(--glift);border:1px solid var(--bdr);border-radius:var(--rl);padding:20px 16px 18px;cursor:pointer;transition:background .12s,transform .1s;-webkit-user-select:none;user-select:none;display:flex;flex-direction:column;gap:8px}
+.mc:active{transform:scale(.96);background:var(--s2)}
+.mc-ico{font-size:26px}
+.mc-name{font-family:var(--fd);font-size:24px;letter-spacing:.03em}
+.mc-desc{font-size:12px;color:var(--t3);line-height:1.4}
+.hbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* PROFILES */
+.pi{display:flex;align-items:center;gap:14px;background:var(--glift);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.pi:active{background:var(--s2)}
+.p-name{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p-score{font-size:12px;color:var(--t3)}
+.add-chip{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px dashed var(--bdr2);border-radius:var(--r);padding:14px 16px;cursor:pointer;color:var(--t2);font-size:14px;font-weight:500;-webkit-user-select:none;user-select:none;width:100%}
+.add-chip:active{background:var(--s2)}
+
+/* SETUP – player select */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pchip{display:flex;align-items:center;gap:10px;background:var(--glift);border:1px solid var(--bdr);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all .12s;-webkit-user-select:none;user-select:none}
+.pchip.on{border-color:var(--gold);background:var(--gd);box-shadow:0 0 0 1px rgba(232,184,75,.1) inset}
+.pchip:active{transform:scale(.96)}
+.pchip-name{font-size:14px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pchip-ck{font-size:13px;color:var(--gold)}
+.add-p{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--s1);border:1px dashed var(--bdr2);border-radius:var(--r);padding:12px 14px;cursor:pointer;color:var(--t3);font-size:13px;-webkit-user-select:none;user-select:none}
+.add-p:active{background:var(--s2)}
+
+/* SETUP – roles */
+.rrow{display:flex;align-items:center;justify-content:space-between;background:var(--glift);border:1px solid var(--bdr);border-radius:var(--r);padding:16px}
+.rlbl{font-size:15px;font-weight:500}
+.rsub{font-size:12px;color:var(--t3);margin-top:2px}
+.sctrl{display:flex;align-items:center;gap:14px}
+.sbtn{width:36px;height:36px;border-radius:50%;background:var(--s3);border:none;color:var(--txt);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none}
+.sbtn:active{opacity:.6}.sbtn:disabled{opacity:.22;pointer-events:none}
+.sval{font-family:var(--fd);font-size:28px;letter-spacing:.02em;min-width:22px;text-align:center}
+.tog{position:relative;width:46px;height:26px;flex-shrink:0}
+.tog input{display:none}
+.ttrack{position:absolute;inset:0;border-radius:13px;background:var(--s3);cursor:pointer;transition:background .2s}
+.ttrack::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--t3);transition:transform .2s,background .2s}
+input:checked+.ttrack{background:var(--gold)}
+input:checked+.ttrack::after{transform:translateX(20px);background:#0C0808}
+
+/* SETUP – category */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ccard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--glift);border:2px solid var(--bdr);border-radius:var(--r);padding:20px 12px;cursor:pointer;transition:all .12s;-webkit-user-select:none;user-select:none;text-align:center}
+.ccard.on{border-color:var(--gold);background:var(--gd);box-shadow:0 0 0 1px rgba(232,184,75,.1) inset}
+.ccard:active{transform:scale(.96)}
+.cico{font-size:26px}.cname{font-size:13px;font-weight:600}
+
+/* Randomizer badge */
+.rbadge{display:flex;align-items:center;gap:14px;padding:18px;background:linear-gradient(160deg,rgba(232,184,75,.16) 0%,rgba(232,184,75,.09) 100%);border:1px solid rgba(232,184,75,.22);border-radius:var(--r);margin-bottom:16px}
+
+/* ASSIGNMENT */
+.ascr{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:52px 24px 44px;max-width:440px;margin:0 auto}
+.plbl{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+.pname{font-family:var(--fd);font-size:52px;letter-spacing:.03em;margin-bottom:28px;text-align:center;line-height:1}
+.cwrap{perspective:1200px;width:min(268px,74vw);height:min(400px,calc(74vw*1.493));margin-bottom:28px;flex-shrink:0}
+.flip{width:100%;height:100%;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,.2,.2,1);position:relative;cursor:pointer}
+.flip.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:24px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.fback{background:var(--s2);border:1px solid var(--bdr2)}
+.flogo{font-family:var(--fd);font-size:44px;letter-spacing:.07em;color:var(--gold);opacity:.3}
+.fhint{font-size:10px;color:var(--t3);margin-top:10px;letter-spacing:.09em;text-transform:uppercase}
+.ffront{transform:rotateY(180deg)}
+.fciv{background:linear-gradient(155deg,#112030 0%,#09131E 100%);border:1px solid rgba(74,143,212,.22)}
+.fimp{background:linear-gradient(155deg,#270C0C 0%,#160606 100%);border:1px solid rgba(198,53,53,.28)}
+.fwg{background:linear-gradient(155deg,#1C1616 0%,#120F0F 100%);border:1px solid rgba(242,236,228,.09)}
+.clbl{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+.crole{font-family:var(--fd);font-size:48px;letter-spacing:.04em;line-height:1;margin-bottom:16px;text-align:center}
+.fciv .crole{color:var(--blue)}.fimp .crole{color:var(--red)}.fwg .crole{color:var(--t2)}
+.cdiv{width:36px;height:1px;background:var(--bdr2);margin:0 0 12px}
+.cwlbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.cword{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center}
+.cnone{font-size:13px;color:var(--t3)}
+.done-btn{opacity:0;transition:opacity .3s;pointer-events:none}
+
+/* GAME INFO */
+.icard{background:var(--glift);border:1px solid var(--bdr);border-radius:var(--rl);padding:24px}
+.irow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.irow:last-child{border-bottom:none}
+.ik{font-size:12px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+.iv{font-family:var(--fd);font-size:22px;letter-spacing:.03em}
+.iv.myst{letter-spacing:.22em;color:var(--t3)}
+
+/* DISCUSSION */
+.bigtxt{font-family:var(--fd);font-size:64px;letter-spacing:.03em;line-height:1;margin-bottom:6px}
+.ppill{display:flex;align-items:center;gap:10px;background:var(--glift);border:1px solid var(--bdr);border-radius:var(--r);padding:12px 14px}
+
+/* VOTING */
+.vitem{display:flex;align-items:center;gap:14px;background:var(--glift);border:2px solid var(--bdr);border-radius:var(--r);padding:15px 16px;cursor:pointer;transition:all .12s;-webkit-user-select:none;user-select:none}
+.vitem.on{border-color:var(--red);background:var(--rd)}
+.vitem:active{transform:scale(.97)}
+.vname{font-size:15px;font-weight:600;flex:1}
+.vx{color:var(--red);font-size:16px}
+
+/* REVEAL */
+.rscr{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:52px 24px 44px;max-width:440px;margin:0 auto;text-align:center}
+.rlbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+.rname{font-family:var(--fd);font-size:44px;letter-spacing:.03em;margin-bottom:28px}
+.rcard{width:min(252px,70vw);border-radius:24px;padding:30px 22px;display:flex;flex-direction:column;align-items:center;margin-bottom:28px}
+.rcard.rciv{background:linear-gradient(155deg,#112030 0%,#09131E 100%);border:1px solid rgba(74,143,212,.22)}
+.rcard.rimp{background:linear-gradient(155deg,#270C0C 0%,#160606 100%);border:1px solid rgba(198,53,53,.28)}
+.rcard.rwg{background:linear-gradient(155deg,#1C1616 0%,#120F0F 100%);border:1px solid rgba(242,236,228,.09)}
+.rwas{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+.rrole{font-family:var(--fd);font-size:46px;letter-spacing:.04em;line-height:1;margin-bottom:14px}
+.rciv .rrole{color:var(--blue)}.rimp .rrole{color:var(--red)}.rwg .rrole{color:var(--t2)}
+.rwlbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:5px;margin-top:12px}
+.rword{font-family:var(--fd);font-size:26px;letter-spacing:.04em}
+
+/* WIN */
+.wscr{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:52px 20px 44px;max-width:440px;margin:0 auto}
+.wbig{font-family:var(--fd);font-size:60px;letter-spacing:.04em;color:var(--gold);line-height:1;margin-bottom:6px;text-align:center}
+.wsub{font-size:13px;color:var(--t3);margin-bottom:28px;text-align:center}
+.witem{display:flex;align-items:center;gap:14px;background:var(--glift);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;width:100%}
+.wname{font-size:15px;font-weight:600}
+.wscore{font-size:12px;color:var(--t3)}
+.wpts{margin-left:auto;font-family:var(--fd);font-size:24px;color:var(--gold)}
+
+/* SCOREBOARD */
+.scitem{display:flex;align-items:center;gap:14px;background:var(--glift);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px}
+.scrank{font-family:var(--fd);font-size:24px;letter-spacing:.02em;color:var(--t3);min-width:28px}
+.scrank.top{color:var(--gold)}
+.scname{font-size:15px;font-weight:600}
+.scpts{margin-left:auto;font-family:var(--fd);font-size:28px;letter-spacing:.02em}
+
+@media (prefers-reduced-motion:reduce){.flip,.btn,.mc,.pchip,.vitem{transition:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ── COLORS ──
+const COLORS=['#E8B84B','#C63535','#4A8FD4','#4CAF50','#9B59B6','#FF7043','#E91E8C','#00BCD4','#26A69A','#FF5722','#7986CB','#A1887F'];
+
+// ── WORDS ──
+const W={
+  classic:{
+    animals:[{w:'Dog',d:'Fox'},{w:'Cat',d:'Lynx'},{w:'Elephant',d:'Mammoth'},{w:'Lion',d:'Cheetah'},{w:'Rabbit',d:'Hamster'},{w:'Shark',d:'Barracuda'},{w:'Eagle',d:'Falcon'},{w:'Snake',d:'Lizard'},{w:'Frog',d:'Salamander'},{w:'Butterfly',d:'Moth'},{w:'Horse',d:'Zebra'},{w:'Cow',d:'Bison'},{w:'Penguin',d:'Puffin'},{w:'Gorilla',d:'Chimpanzee'},{w:'Crocodile',d:'Alligator'},{w:'Parrot',d:'Macaw'},{w:'Octopus',d:'Squid'},{w:'Turtle',d:'Tortoise'},{w:'Whale',d:'Manatee'},{w:'Bat',d:'Flying Fox'}],
+    food:[{w:'Pizza',d:'Calzone'},{w:'Sushi',d:'Onigiri'},{w:'Burger',d:'Hot Dog'},{w:'Ice Cream',d:'Gelato'},{w:'Pasta',d:'Noodles'},{w:'Cake',d:'Muffin'},{w:'Coffee',d:'Espresso'},{w:'Beer',d:'Cider'},{w:'Ramen',d:'Pho'},{w:'Tacos',d:'Burritos'},{w:'Pancakes',d:'Waffles'},{w:'Steak',d:'Pork Chop'},{w:'Sandwich',d:'Wrap'},{w:'Chocolate',d:'Caramel'},{w:'Smoothie',d:'Milkshake'},{w:'Soup',d:'Stew'},{w:'Cheese',d:'Cream Cheese'},{w:'Wine',d:'Champagne'},{w:'Donut',d:'Bagel'},{w:'Popcorn',d:'Pretzels'}],
+    sports:[{w:'Basketball',d:'Handball'},{w:'Soccer',d:'Rugby'},{w:'Tennis',d:'Badminton'},{w:'Swimming',d:'Water Polo'},{w:'Baseball',d:'Cricket'},{w:'Golf',d:'Disc Golf'},{w:'Boxing',d:'Wrestling'},{w:'Cycling',d:'Skateboarding'},{w:'Running',d:'Race Walking'},{w:'Gymnastics',d:'Cheerleading'},{w:'Surfing',d:'Wakeboarding'},{w:'Hockey',d:'Lacrosse'},{w:'Skiing',d:'Snowboarding'},{w:'Archery',d:'Darts'},{w:'Fencing',d:'Karate'},{w:'Table Tennis',d:'Squash'},{w:'Rowing',d:'Kayaking'},{w:'Bowling',d:'Curling'},{w:'Weightlifting',d:'Powerlifting'},{w:'Volleyball',d:'Sepak Takraw'}],
+    objects:[{w:'Chair',d:'Stool'},{w:'Table',d:'Desk'},{w:'Lamp',d:'Lantern'},{w:'Clock',d:'Stopwatch'},{w:'Bottle',d:'Flask'},{w:'Knife',d:'Scissors'},{w:'Mirror',d:'Glass'},{w:'Pillow',d:'Cushion'},{w:'Bag',d:'Backpack'},{w:'Pen',d:'Pencil'},{w:'Phone',d:'Tablet'},{w:'Camera',d:'Telescope'},{w:'Key',d:'Lock'},{w:'Hat',d:'Cap'},{w:'Shoes',d:'Sandals'},{w:'Glasses',d:'Goggles'},{w:'Umbrella',d:'Parasol'},{w:'Watch',d:'Bracelet'},{w:'Candle',d:'Torch'},{w:'Guitar',d:'Ukulele'}],
+    places:[{w:'Beach',d:'Lake Shore'},{w:'Mountain',d:'Volcano'},{w:'Park',d:'Garden'},{w:'Mall',d:'Bazaar'},{w:'School',d:'Academy'},{w:'Hospital',d:'Clinic'},{w:'Airport',d:'Train Station'},{w:'Restaurant',d:'Cafe'},{w:'Library',d:'Bookstore'},{w:'Museum',d:'Gallery'},{w:'Hotel',d:'Inn'},{w:'Cinema',d:'Theater'},{w:'Church',d:'Temple'},{w:'Stadium',d:'Arena'},{w:'Forest',d:'Jungle'},{w:'Desert',d:'Savanna'},{w:'Island',d:'Peninsula'},{w:'Cave',d:'Mine'},{w:'Farm',d:'Ranch'},{w:'Lighthouse',d:'Watchtower'}],
+    movies:[{w:'Avengers',d:'Justice League'},{w:'Harry Potter',d:'Percy Jackson'},{w:'Squid Game',d:'Alice in Borderland'},{w:'Naruto',d:'Bleach'},{w:'Spider-Man',d:'Batman'},{w:'Titanic',d:'The Notebook'},{w:'The Office',d:'Parks and Recreation'},{w:'Friends',d:'How I Met Your Mother'},{w:'Breaking Bad',d:'Better Call Saul'},{w:'Game of Thrones',d:'The Witcher'},{w:'Shrek',d:'Kung Fu Panda'},{w:'Stranger Things',d:'Dark'},{w:'Attack on Titan',d:'Demon Slayer'},{w:'One Piece',d:'Fairy Tail'},{w:'Money Heist',d:'Prison Break'},{w:'The Hunger Games',d:'Maze Runner'},{w:'Inception',d:'Interstellar'},{w:'The Mandalorian',d:'The Book of Boba Fett'},{w:'Jujutsu Kaisen',d:'Chainsaw Man'},{w:'Wednesday',d:'You'}]
+  },
+  drawing:{
+    animals:[{w:'Dog',d:'Fox'},{w:'Cat',d:'Rabbit'},{w:'Fish',d:'Frog'},{w:'Bird',d:'Bat'},{w:'Elephant',d:'Hippo'},{w:'Monkey',d:'Gorilla'},{w:'Cow',d:'Horse'},{w:'Lion',d:'Tiger'},{w:'Penguin',d:'Duck'},{w:'Crab',d:'Lobster'},{w:'Butterfly',d:'Dragonfly'},{w:'Turtle',d:'Snail'},{w:'Shark',d:'Whale'},{w:'Bear',d:'Panda'},{w:'Octopus',d:'Jellyfish'}],
+    food:[{w:'Pizza',d:'Pie'},{w:'Burger',d:'Sandwich'},{w:'Ice Cream',d:'Cupcake'},{w:'Apple',d:'Pear'},{w:'Banana',d:'Corn'},{w:'Donut',d:'Bagel'},{w:'Cake',d:'Bread'},{w:'Carrot',d:'Radish'},{w:'Cherry',d:'Strawberry'},{w:'Watermelon',d:'Orange'},{w:'Egg',d:'Lemon'},{w:'Cookie',d:'Cracker'},{w:'Lollipop',d:'Ice Pop'},{w:'Sushi',d:'Spring Roll'},{w:'Mushroom',d:'Broccoli'}],
+    sports:[{w:'Basketball',d:'Volleyball'},{w:'Soccer Ball',d:'Football'},{w:'Tennis Racket',d:'Badminton Racket'},{w:'Baseball Bat',d:'Cricket Bat'},{w:'Golf Club',d:'Hockey Stick'},{w:'Boxing Gloves',d:'Karate Belt'},{w:'Skateboard',d:'Surfboard'},{w:'Bicycle',d:'Unicycle'},{w:'Bowling Pin',d:'Skittle'},{w:'Dartboard',d:'Archery Target'},{w:'Barbell',d:'Dumbbell'},{w:'Swimming Goggles',d:'Diving Mask'},{w:'Jump Rope',d:'Lasso'},{w:'Ice Skates',d:'Roller Blades'},{w:'Ping Pong Paddle',d:'Spatula'}],
+    objects:[{w:'House',d:'Castle'},{w:'Car',d:'Bus'},{w:'Tree',d:'Cactus'},{w:'Sun',d:'Moon'},{w:'Star',d:'Diamond'},{w:'Cloud',d:'Wave'},{w:'Chair',d:'Throne'},{w:'Book',d:'Scroll'},{w:'Guitar',d:'Violin'},{w:'Clock',d:'Hourglass'},{w:'Hat',d:'Crown'},{w:'Key',d:'Lock'},{w:'Umbrella',d:'Parasol'},{w:'Candle',d:'Torch'},{w:'Bell',d:'Horn'}],
+    nature:[{w:'Ocean',d:'Lake'},{w:'Mountain',d:'Volcano'},{w:'Forest',d:'Jungle'},{w:'Desert',d:'Savanna'},{w:'Rainbow',d:'Aurora'},{w:'Waterfall',d:'Geyser'},{w:'Tornado',d:'Hurricane'},{w:'Cave',d:'Canyon'},{w:'Island',d:'Peninsula'},{w:'River',d:'Stream'},{w:'Sunset',d:'Sunrise'},{w:'Storm',d:'Fog'},{w:'Cliff',d:'Ravine'},{w:'Hot Spring',d:'Oasis'},{w:'Glacier',d:'Iceberg'}]
+  }
+};
+
+const PROMPTS=[
+  {b:'Describe your ideal day off',t:"Describe your ideal day off if you despised yourself"},
+  {b:'Give someone a compliment',t:"Give a compliment that's secretly an insult"},
+  {b:'Describe your perfect weekend',t:"Describe your weekend with zero social battery left"},
+  {b:'Pitch yourself for a job',t:"Pitch yourself for a job you're completely wrong for"},
+  {b:'Give a toast at a party',t:"Give a toast designed to make the guest of honor cry"},
+  {b:'Describe your hometown',t:"Describe your hometown to someone you want to scare off"},
+  {b:'Give someone directions',t:"Give directions designed to get someone completely lost"},
+  {b:'Describe what you look for in a friend',t:"Describe what you look for in a friend if you wanted enemies"},
+  {b:'Recommend a movie',t:"Recommend a movie as punishment"},
+  {b:'Give advice to someone starting college',t:"Give advice designed to ruin their college experience"},
+  {b:'Describe your ideal vacation',t:"Describe your ideal vacation if comfort was illegal"},
+  {b:'Introduce yourself at a party',t:"Introduce yourself at a party to clear the room"},
+  {b:'Pitch a business idea',t:"Pitch a business idea guaranteed to lose money"},
+  {b:'Describe your dream house',t:"Describe your dream house if you hated yourself"},
+  {b:'Recommend a gift for your best friend',t:"Recommend a gift designed to end a friendship"},
+  {b:'Give a motivational speech',t:"Give a speech that leaves everyone more hopeless"},
+  {b:'Describe your favorite hobby',t:"Describe your hobby if you wanted people to avoid you"},
+  {b:'Say something kind to cheer someone up',t:"Say something kind that would actually make things worse"},
+  {b:'Describe an ideal first date',t:"Describe a first date that guarantees no second one"},
+  {b:'Give a book recommendation',t:"Give a book recommendation as a passive-aggressive move"},
+  {b:'Describe what makes a good leader',t:"Describe a good leader if you admired dictators"},
+  {b:'Pitch a new TV show idea',t:"Pitch a show guaranteed to be cancelled after one episode"},
+  {b:'Describe your go-to comfort food',t:"Describe comfort food if comfort was the enemy"},
+  {b:'Give a review of your favorite restaurant',t:"Give a review designed to shut the restaurant down"},
+  {b:'Describe the best advice you ever received',t:"Describe advice that sounds wise but ruins everything"}
+];
+
+// ── STORAGE ──
+const SK={p:'imposta_p',u:'imposta_u'};
+function gP(){try{return JSON.parse(localStorage.getItem(SK.p))||[];}catch{return[];}}
+function sP(a){localStorage.setItem(SK.p,JSON.stringify(a));}
+function gUsed(k){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};return a[k]||[];}catch{return[];}}
+function addUsed(k,i){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};a[k]=[...(a[k]||[]),i];localStorage.setItem(SK.u,JSON.stringify(a));}catch{}}
+function resetUsed(k){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};a[k]=[];localStorage.setItem(SK.u,JSON.stringify(a));}catch{}}
+function addScore(id,pts){const ps=gP();const p=ps.find(x=>x.id===id);if(p){p.score=(p.score||0)+pts;sP(ps);}}
+
+// ── UTILS ──
+function uid(){return Math.random().toString(36).slice(2,10);}
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function ini(n){return(n||'?')[0].toUpperCase();}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function gProf(id){return gP().find(p=>p.id===id);}
+
+function pickWord(mode,cat){
+  const pool=W[mode]&&W[mode][cat];if(!pool)return null;
+  const k=`${mode}_${cat}`;let used=gUsed(k);
+  let avail=pool.map((_,i)=>i).filter(i=>!used.includes(i));
+  if(!avail.length){resetUsed(k);avail=pool.map((_,i)=>i);}
+  const i=avail[Math.floor(Math.random()*avail.length)];
+  addUsed(k,i);return pool[i];
+}
+function pickPrompt(){
+  const k='prompts';let used=gUsed(k);
+  let avail=PROMPTS.map((_,i)=>i).filter(i=>!used.includes(i));
+  if(!avail.length){resetUsed(k);avail=PROMPTS.map((_,i)=>i);}
+  const i=avail[Math.floor(Math.random()*avail.length)];
+  addUsed(k,i);return PROMPTS[i];
+}
+
+// ── APP STATE ──
+let scr='home';
+let SS={step:1,mode:null,ids:[],imp:1,wg:false,rand:false,cat:null,addP:false,newName:'',newColor:COLORS[0]};
+let GS=null;
+let voteTarget=null;
+let pendingVoted=null;
+let winRes=null;
+let scoresApplied=false;
+let editId=null;
+let editSt={name:'',color:'',photo:null};
+let detailId=null;
+
+// ── NAVIGATION ──
+function nav(s){scr=s;render();requestAnimationFrame(()=>{const a=document.getElementById('app');if(a)a.scrollTop=0;});}
+function render(){const a=document.getElementById('app');if(!a)return;const map={home:rHome,profiles:rProfiles,setup:rSetup,assignment:rAssign,gameinfo:rInfo,discussion:rDisc,voting:rVote,rolereveal:rReveal,whiteguess:rWGGuess,win:rWin,scoreboard:rScore,randpicker:rRandPicker,profdetail:rProfDetail};const fn=map[scr];if(fn)a.innerHTML=fn();else a.innerHTML=rHome();}
+
+// ── GAME INIT ──
+function startSetup(mode){SS={step:1,mode,ids:[],imp:1,wg:false,rand:false,randMode:null,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
+function startSetupRand(rm){SS={step:1,mode:'randomizer',ids:[],imp:1,wg:false,rand:true,randMode:rm,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
+
+function startGame(){
+  const{mode,ids,imp,wg,rand,cat,blind,randMode}=SS;
+  winRes=null;pendingVoted=null;voteTarget=null;scoresApplied=false;
+  const sh=shuffle([...ids]);const total=sh.length;
+  let roles=[];let wd=null;let pd=null;
+  let aImp=imp;let aWG=wg;let allImp=false;
+  let rMode=mode;
+
+  if(rand){
+    let rm=randMode;
+    if(rm==='any'){const ms=['classic','prompt','drawing'];rm=ms[Math.floor(Math.random()*ms.length)];}
+    rMode=rm;
+    aImp=Math.floor(Math.random()*(total+1));
+    allImp=aImp===total;
+    if(rMode==='prompt'){
+      pd=pickPrompt();
+      aWG=false;
+    }else{
+      aWG=!allImp&&aImp>0&&total-aImp>=1&&Math.random()>.55;
+      if(!allImp){
+        const wm=rMode==='drawing'?'drawing':'classic';
+        const cats=Object.keys(W[wm]);
+        wd=pickWord(wm,cats[Math.floor(Math.random()*cats.length)]);
+      }
+    }
+  }else if(mode==='prompt'){
+    pd=pickPrompt();
+  }else{
+    wd=pickWord(mode==='drawing'?'drawing':'classic',cat);
+  }
+
+  if(allImp){
+    const allDecoys=[];Object.values(W.classic).forEach(arr=>arr.forEach(p=>allDecoys.push(p.d)));
+    const sd=shuffle(allDecoys);
+    sh.forEach((id,i)=>roles.push({pid:id,role:'impostor',word:sd[i%sd.length]}));
+  }else{
+    sh.forEach((id,i)=>{
+      if(i<aImp){roles.push({pid:id,role:'impostor',word:pd?pd.t:(wd?wd.d:'???')});}
+      else if(aWG&&i===aImp){roles.push({pid:id,role:'whiteguy',word:null});}
+      else{roles.push({pid:id,role:'civilian',word:pd?pd.b:(wd?wd.w:'???')});}
+    });
+  }
+
+  GS={mode:rMode,wd,pd,roles,alive:[...sh],initImp:aImp,allImp,rand,randMode:randMode||null,aIdx:0,initN:total,players:ids,blind};
+  nav('assignment');
+}
+
+// ── WIN CHECK ──
+function checkWin(votedId,wgResult){
+  const{alive,roles,initImp,allImp,initN}=GS;
+  const gr=id=>roles.find(r=>r.pid===id);
+  const ar=alive.map(gr).filter(Boolean);
+  const ai=ar.filter(r=>r.role==='impostor');
+  const aw=ar.filter(r=>r.role==='whiteguy');
+  const vr=gr(votedId);
+
+  if(vr&&vr.role==='whiteguy'&&wgResult==='correct'){
+    return{type:'wg_win',winners:[votedId,...ai.map(r=>r.pid)],wgId:votedId};}
+
+  if(ai.length===0&&aw.length===0){
+    if(initImp===0){
+      return alive.length<=2?{type:'surv_win',winners:[...alive]}:null;
+    }
+    return{type:'civ_win',winners:[...alive]};}
+
+  if(initImp===0){
+    return alive.length<=2?{type:'surv_win',winners:[...alive]}:null;}
+
+  if(initImp===1&&!allImp){
+    if(ai.length===1&&vr&&vr.role==='civilian'){
+      return{type:'solo_win',winners:[ai[0].pid],big:initN>=5};}}
+
+  if(initImp>=2||allImp){
+    if(alive.length===2&&ai.length>=1){
+      return{type:'imp_win',winners:ai.map(r=>r.pid)};}}
+
+  return null;
+}
+
+function applyScores(res){
+  if(!res)return;
+  switch(res.type){
+    case'civ_win':res.winners.forEach(id=>addScore(id,1));break;
+    case'solo_win':addScore(res.winners[0],res.big?3:1);break;
+    case'imp_win':res.winners.forEach(id=>addScore(id,1));break;
+    case'wg_win':addScore(res.wgId,3);res.winners.filter(id=>id!==res.wgId).forEach(id=>addScore(id,1));break;
+    case'surv_win':res.winners.forEach(id=>addScore(id,1));break;
+  }
+}
+function goToWin(){if(winRes&&!scoresApplied){applyScores(winRes);applyStats(winRes);scoresApplied=true;}nav('win');}
+
+function applyStats(res){
+  if(!res)return;
+  const ps=gP();
+  (GS.players||[]).forEach(id=>{
+    const p=ps.find(x=>x.id===id);if(!p)return;
+    if(p.wins===undefined)p.wins=0;
+    if(p.losses===undefined)p.losses=0;
+    if(!p.roleStats)p.roleStats={civilian:{wins:0,games:0},impostor:{wins:0,games:0},whiteguy:{wins:0,games:0}};
+    const roleObj=GS.roles.find(r=>r.pid===id);
+    const role=roleObj?roleObj.role:'civilian';
+    if(!p.roleStats[role])p.roleStats[role]={wins:0,games:0};
+    const won=res.winners.includes(id);
+    if(won){p.wins++;p.roleStats[role].wins++;}else{p.losses++;}
+    p.roleStats[role].games++;
+  });
+  sP(ps);
+}
+function winrateStr(p){const w=p.wins||0;const l=p.losses||0;const g=w+l;return g?Math.round(w/g*100)+'%':'—';}
+function openDetail(id){detailId=id;nav('profdetail');}
+function compressImage(file){
+  return new Promise(resolve=>{
+    const img=new Image();const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const sz=200;const c=document.createElement('canvas');c.width=sz;c.height=sz;
+      const ctx=c.getContext('2d');const s=Math.min(img.width,img.height);
+      ctx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,sz,sz);
+      URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',.75));
+    };img.src=url;
+  });
+}
+async function handlePhotoEdit(inp){if(!inp.files||!inp.files[0])return;editSt.photo=await compressImage(inp.files[0]);render();}
+async function handlePhotoNew(inp){if(!inp.files||!inp.files[0])return;SS.newPhoto=await compressImage(inp.files[0]);render();}
+function avatar(p,cls){
+  if(p&&p.photo)return`<img src="${p.photo}" class="dot ${cls}" style="display:block;object-fit:cover">`;
+  return`<div class="dot ${cls}" style="background:${p?p.color:'#888'}">${ini(p?p.name:'?')}</div>`;
+}
+
+// ── PROFILE ACTIONS ──
+function editProf(id){const p=gProf(id);if(!p)return;editId=id;editSt={name:p.name,color:p.color,photo:p.photo||null};render();setTimeout(()=>{const i=document.getElementById('en');if(i)i.focus();},60);}
+function cancelEdit(){editId=null;render();}
+function saveEdit(){
+  const name=(document.getElementById('en')?.value||editSt.name).trim();
+  if(!name)return;
+  const ps=gP();const p=ps.find(x=>x.id===editId);
+  if(p){p.name=name;p.color=editSt.color;p.photo=editSt.photo||null;sP(ps);}
+  editId=null;render();
+}
+function delProf(id){if(!confirm('Delete this profile?'))return;sP(gP().filter(p=>p.id!==id));if(editId===id)editId=null;render();}
+function swatchEdit(el,c){editSt.color=c;el.closest('.ebox').querySelectorAll('.sw').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
+function swatchNew(el,c){SS.newColor=c;el.closest('.ebox').querySelectorAll('.sw').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
+function saveNewProf(){
+  const name=(document.getElementById('nn')?.value||'').trim();if(!name)return;
+  const ps=gP();ps.push({id:uid(),name,color:SS.newColor,photo:SS.newPhoto||null,score:0,wins:0,losses:0,roleStats:{civilian:{wins:0,games:0},impostor:{wins:0,games:0},whiteguy:{wins:0,games:0}}});sP(ps);
+  SS.addP=false;SS.newName='';SS.newColor=COLORS[ps.length%COLORS.length];SS.newPhoto=null;render();
+}
+
+// ── SETUP ACTIONS ──
+function toggleP(id){const i=SS.ids.indexOf(id);if(i===-1)SS.ids.push(id);else SS.ids.splice(i,1);render();}
+function saveInlineP(){
+  const name=(document.getElementById('inn')?.value||'').trim();if(!name)return;
+  const ps=gP();const np={id:uid(),name,color:SS.newColor,photo:SS.newPhoto||null,score:0,wins:0,losses:0,roleStats:{civilian:{wins:0,games:0},impostor:{wins:0,games:0},whiteguy:{wins:0,games:0}}};ps.push(np);sP(ps);
+  SS.ids.push(np.id);SS.addP=false;SS.newName='';SS.newColor=COLORS[ps.length%COLORS.length];SS.newPhoto=null;render();
+}
+function adjImp(d){const max=SS.ids.length-(SS.wg?2:1);SS.imp=Math.max(0,Math.min(SS.imp+d,max));render();}
+function togWG(v){SS.wg=v;SS.imp=Math.min(SS.imp,SS.ids.length-(v?2:1));render();}
+function selCat(k){SS.cat=k;render();}
+function step2proceed(){if(SS.mode==='prompt')startGame();else{SS.step=3;render();}}
+
+// ── GAME ACTIONS ──
+function revealCard(){
+  const c=document.getElementById('fc');if(!c||c.classList.contains('flipped'))return;
+  c.classList.add('flipped');
+  setTimeout(()=>{const b=document.querySelector('.done-btn');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}},660);
+}
+function advAssign(){GS.aIdx++;if(GS.aIdx>=GS.roles.length)nav('gameinfo');else nav('assignment');}
+function selVote(id){voteTarget=voteTarget===id?null:id;render();}
+function confirmVote(){
+  if(!voteTarget)return;
+  pendingVoted=voteTarget;voteTarget=null;
+  GS.alive=GS.alive.filter(id=>id!==pendingVoted);
+  nav('rolereveal');
+}
+function submitGuess(){
+  const input=document.getElementById('wgg');const guess=(input?input.value:'').trim();
+  const actual=(GS.wd?GS.wd.w:GS.pd?GS.pd.b:'').trim();
+  const correct=guess.toLowerCase()===actual.toLowerCase();
+  const rd=document.getElementById('gr');const cd=document.getElementById('gc');
+  if(!rd)return;
+  rd.style.display='block';
+  if(correct){
+    rd.innerHTML=`<div style="font-family:var(--fd);font-size:40px;color:var(--gold);letter-spacing:.04em">CORRECT!</div><div style="font-size:13px;color:var(--t2);margin-top:4px">The word was <strong>${esc(actual)}</strong></div>`;
+    const res=checkWin(pendingVoted,'correct');winRes=res;if(res){applyScores(res);applyStats(res);scoresApplied=true;}
+    if(cd){cd.innerHTML=`<button class="btn btn-gold" onclick="goToWin()">See Results →</button>`;cd.style.display='block';}
+  }else{
+    rd.innerHTML=`<div style="font-family:var(--fd);font-size:40px;color:var(--red);letter-spacing:.04em">WRONG</div>`;
+    const res=checkWin(pendingVoted,null);
+    if(res){winRes=res;applyScores(res);applyStats(res);scoresApplied=true;if(cd){cd.innerHTML=`<button class="btn btn-gold" onclick="goToWin()">See Results →</button>`;cd.style.display='block';}}
+    else{if(cd){cd.innerHTML=`<button class="btn btn-surf" onclick="nav('discussion')">Continue →</button>`;cd.style.display='block';}}
+  }
+  if(input)input.disabled=true;
+  document.querySelectorAll('.wg-btn').forEach(b=>b.disabled=true);
+}
+function playAgain(){
+  const ids=[...(GS.players||[])];const isRand=GS.rand;
+  SS={step:1,mode:isRand?'randomizer':GS.mode,ids,imp:1,wg:false,rand:isRand,randMode:isRand?GS.randMode:null,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};
+  nav('setup');
+}
+
+// ── SCREEN RENDERERS ──
+
+function rRandPicker(){
+  return`<div class="scr">
+    <button class="bk" onclick="nav('home')">← Home</button>
+    <div class="sh">Randomizer</div>
+    <div class="ss">Pick a mode to randomize</div>
+    <div class="mgrid">
+      <div class="mc" onclick="startSetupRand('classic')"><div class="mc-ico">🎯</div><div class="mc-name">Classic</div><div class="mc-desc">Random roles, same word</div></div>
+      <div class="mc" onclick="startSetupRand('prompt')"><div class="mc-ico">💬</div><div class="mc-name">Prompt</div><div class="mc-desc">Random roles, twist prompt</div></div>
+      <div class="mc" onclick="startSetupRand('drawing')"><div class="mc-ico">✏️</div><div class="mc-name">Drawing</div><div class="mc-desc">Random roles, draw it</div></div>
+      <div class="mc" onclick="startSetupRand('any')"><div class="mc-ico">🎲</div><div class="mc-name">Surprise</div><div class="mc-desc">Everything is random</div></div>
+    </div>
+  </div>`;
+}
+
+function rHome(){
+  return`<div class="scr">
+    <div class="logo">IMPOSTA</div>
+    <div class="tagline">Who's the impostor?</div>
+    <div class="mgrid">
+      <div class="mc" onclick="startSetup('classic')"><div class="mc-ico">🎯</div><div class="mc-name">Classic</div><div class="mc-desc">Same word, different story</div></div>
+      <div class="mc" onclick="startSetup('prompt')"><div class="mc-ico">💬</div><div class="mc-name">Prompt</div><div class="mc-desc">Answer the same question — differently</div></div>
+      <div class="mc" onclick="startSetup('drawing')"><div class="mc-ico">✏️</div><div class="mc-name">Drawing</div><div class="mc-desc">Draw it. Survive it.</div></div>
+      <div class="mc" onclick="nav('randpicker')"><div class="mc-ico">🎲</div><div class="mc-name">Randomizer</div><div class="mc-desc">Nobody knows who's what</div></div>
+    </div>
+    <div class="hbtns">
+      <button class="btn btn-surf" onclick="nav('profiles')">👤 Profiles</button>
+      <button class="btn btn-surf" onclick="nav('scoreboard')">🏆 Scores</button>
+    </div>
+  </div>`;
+}
+
+function rProfiles(){
+  const ps=gP();
+  function editForm(p){
+    const photoPrev=editSt.photo
+      ?`<img src="${editSt.photo}" style="width:38px;height:38px;border-radius:50%;object-fit:cover">`
+      :`<div class="dot dot-lg" style="background:${editSt.color}">${ini(p.name)}</div>`;
+    return`<div class="ebox" id="ebox">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <label for="phe" style="cursor:pointer;position:relative;display:inline-flex">
+          ${photoPrev}
+          <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#0C0808">+</div>
+        </label>
+        ${editSt.photo?`<button class="btn btn-ghost btn-sm" style="width:auto;padding:8px 12px;font-size:12px" onclick="editSt.photo=null;render()">Remove photo</button>`:`<span style="font-size:12px;color:var(--t3)">Tap to add photo</span>`}
+        <input type="file" id="phe" accept="image/*" style="display:none" onchange="handlePhotoEdit(this)">
+      </div>
+      <div style="margin-bottom:12px"><input class="inp" id="en" value="${esc(p.name)}" placeholder="Name" maxlength="20"></div>
+      <div class="col-grid">${COLORS.map(c=>`<div class="sw${c===p.color?' sel':''}" style="background:${c}" data-c="${c}" onclick="swatchEdit(this,'${c}')"></div>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-gold" style="flex:1" onclick="saveEdit()">Save</button>
+        <button class="btn btn-ghost btn-sm" style="width:auto;padding:10px 16px" onclick="cancelEdit()">Cancel</button>
+      </div>
+    </div>`;
+  }
+  const list=ps.map(p=>`<div>
+    <div class="pi" onclick="${editId===p.id?'cancelEdit()':'editProf(\''+p.id+'\')'}">
+      ${avatar(p,'dot-lg')}
+      <div style="flex:1;min-width:0"><div class="p-name">${esc(p.name)}</div><div class="p-score">${p.score||0} pts</div></div>
+      <div onclick="event.stopPropagation()"><button class="ico" onclick="delProf('${p.id}')">✕</button></div>
+    </div>
+    ${editId===p.id?editForm(p):''}
+  </div>`).join('');
+
+  let addSec='';
+  if(SS.addP){
+    addSec=`<div class="ebox">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <label for="phc" style="cursor:pointer;position:relative;display:inline-flex">
+          ${SS.newPhoto?`<img src="${SS.newPhoto}" style="width:38px;height:38px;border-radius:50%;object-fit:cover">`:`<div class="dot dot-lg" style="background:${SS.newColor}">${ini(SS.newName||'?')}</div>`}
+          <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#0C0808">+</div>
+        </label>
+        ${SS.newPhoto?`<button class="btn btn-ghost btn-sm" style="width:auto;padding:8px 12px;font-size:12px" onclick="SS.newPhoto=null;render()">Remove photo</button>`:`<span style="font-size:12px;color:var(--t3)">Tap to add photo</span>`}
+        <input type="file" id="phc" accept="image/*" style="display:none" onchange="handlePhotoNew(this)">
+      </div>
+      <div style="margin-bottom:12px"><input class="inp" id="nn" value="${esc(SS.newName)}" placeholder="Player name" maxlength="20"></div>
+      <div class="col-grid">${COLORS.map(c=>`<div class="sw${c===SS.newColor?' sel':''}" style="background:${c}" onclick="swatchNew(this,'${c}')"></div>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-gold" style="flex:1" onclick="saveNewProf()">Add</button>
+        <button class="btn btn-ghost btn-sm" style="width:auto;padding:10px 16px" onclick="SS.addP=false;SS.newPhoto=null;render()">Cancel</button>
+      </div>
+    </div>`;
+  }
+
+  return`<div class="scr">
+    <button class="bk" onclick="nav('home')">← Back</button>
+    <div class="sh">Profiles</div>
+    <div class="ss">Tap to edit</div>
+    <div class="stk g8">
+      ${list}
+      ${!SS.addP?`<div class="add-chip" onclick="SS.addP=true;render()">+ New Profile</div>`:addSec}
+    </div>
+  </div>`;
+}
+
+function stepBar(total){
+  return`<div class="steps">${Array.from({length:total},(_,i)=>{const s=i+1;return`<div class="step${s<SS.step?' dn':s===SS.step?' on':''}"></div>`}).join('')}</div>`;
+}
+
+function rSetup(){
+  if(SS.step===1)return rS1();
+  if(SS.step===2)return rS2();
+  if(SS.step===3)return rS3();
+  return rS1();
+}
+
+function rS1(){
+  const ps=gP();const sel=SS.ids;
+  const mLabel={classic:'Classic',prompt:'Prompt',drawing:'Drawing',randomizer:'Randomizer'}[SS.mode]||'';
+  const total=SS.mode==='prompt'||SS.mode==='randomizer'?2:3;
+
+  const chips=ps.map(p=>`<div class="pchip${sel.includes(p.id)?' on':''}" onclick="toggleP('${p.id}')">
+    ${avatar(p,'dot-sm')}
+    <div class="pchip-name">${esc(p.name)}</div>
+    ${sel.includes(p.id)?`<div class="pchip-ck">✓</div>`:''}
+  </div>`).join('');
+
+  let addSec='';
+  if(SS.addP){
+    addSec=`<div class="ebox" style="grid-column:1/-1">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <label for="phi" style="cursor:pointer;position:relative;display:inline-flex">
+          ${SS.newPhoto?`<img src="${SS.newPhoto}" style="width:38px;height:38px;border-radius:50%;object-fit:cover">`:`<div class="dot dot-lg" style="background:${SS.newColor}">${ini(SS.newName||'?')}</div>`}
+          <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#0C0808">+</div>
+        </label>
+        ${SS.newPhoto?`<button class="btn btn-ghost btn-sm" style="width:auto;padding:8px 12px;font-size:12px" onclick="SS.newPhoto=null;render()">Remove photo</button>`:`<span style="font-size:12px;color:var(--t3)">Tap to add photo</span>`}
+        <input type="file" id="phi" accept="image/*" style="display:none" onchange="handlePhotoNew(this)">
+      </div>
+      <div style="margin-bottom:12px"><input class="inp" id="inn" value="${esc(SS.newName)}" placeholder="Name" maxlength="20"></div>
+      <div class="col-grid">${COLORS.map(c=>`<div class="sw${c===SS.newColor?' sel':''}" style="background:${c}" onclick="swatchNew(this,'${c}')"></div>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-gold" style="flex:1" onclick="saveInlineP()">Add & Select</button>
+        <button class="btn btn-ghost btn-sm" style="width:auto;padding:10px 16px" onclick="SS.addP=false;SS.newPhoto=null;render()">Cancel</button>
+      </div>
+    </div>`;
+  }
+
+  return`<div class="scr">
+    <button class="bk" onclick="${SS.rand?'nav(\'randpicker\')':'nav(\'home\')'}">← ${mLabel}</button>
+    ${stepBar(total)}
+    <div class="sh">Players</div>
+    <div class="ss">${sel.length} selected — need at least 2</div>
+    <div class="pgrid" style="margin-bottom:10px">
+      ${chips}
+      ${!SS.addP?`<div class="add-p" onclick="SS.addP=true;render()">+ New</div>`:''}
+      ${addSec}
+    </div>
+    <div class="sp" style="min-height:16px"></div>
+    <button class="btn btn-gold" ${sel.length>=2?'':'disabled'} onclick="SS.step=2;render()">Continue →</button>
+  </div>`;
+}
+
+function rS2(){
+  const{mode,ids,imp,wg,rand,randMode}=SS;const n=ids.length;
+  const total=mode==='prompt'||rand?2:3;
+  const mLabel={classic:'Classic',prompt:'Prompt',drawing:'Drawing',randomizer:'Randomizer'}[mode]||'';
+
+  if(rand){
+    return`<div class="scr">
+      <button class="bk" onclick="SS.step=1;render()">← Back</button>
+      ${stepBar(total)}
+      <div class="sh">Randomizer</div>
+      <div class="ss">${n} players ready</div>
+      <div class="rbadge">
+        <span style="font-size:26px">🎲</span>
+        <div>
+          <div style="font-weight:600;font-size:14px">Fully random</div>
+          <div style="font-size:12px;color:var(--t3)">Roles and counts are hidden from everyone</div>
+        </div>
+      </div>
+      <div class="note">The app randomly assigns roles before the game. Nobody knows how many impostors there are — not even you.</div>
+      ${randMode!=='drawing'?`<div class="stk g12" style="margin-top:16px"><div class="rrow">
+        <div><div class="rlbl">Blind Mode</div><div class="rsub">Players see word only — no role shown</div></div>
+        <label class="tog"><input type="checkbox" ${SS.blind?'checked':''} onchange="SS.blind=this.checked;render()"><div class="ttrack"></div></label>
+      </div></div>`:''}
+      <div class="sp" style="min-height:20px"></div>
+      <button class="btn btn-gold" onclick="startGame()">Start →</button>
+    </div>`;
+  }
+
+  const maxImp=n-(wg?2:1);const adjImp=Math.min(imp,maxImp);
+  const civN=n-adjImp-(wg?1:0);
+
+  return`<div class="scr">
+    <button class="bk" onclick="SS.step=1;render()">← Back</button>
+    ${stepBar(total)}
+    <div class="sh">Roles</div>
+    <div class="ss">${n} players</div>
+    <div class="stk g12">
+      <div class="rrow">
+        <div><div class="rlbl">Civilians</div><div class="rsub">Know the word</div></div>
+        <div style="font-family:var(--fd);font-size:28px;color:var(--t2)">${civN}</div>
+      </div>
+      <div class="rrow">
+        <div><div class="rlbl">Impostors</div><div class="rsub">Get the decoy</div></div>
+        <div class="sctrl">
+          <button class="sbtn" onclick="adjImp(-1)" ${adjImp<=0?'disabled':''}>−</button>
+          <div class="sval">${adjImp}</div>
+          <button class="sbtn" onclick="adjImp(1)" ${adjImp>=maxImp?'disabled':''}>+</button>
+        </div>
+      </div>
+      ${mode!=='prompt'?`<div class="rrow">
+        <div><div class="rlbl">White Guy</div><div class="rsub">Gets nothing — must guess if voted out</div></div>
+        <label class="tog"><input type="checkbox" ${wg?'checked':''} onchange="togWG(this.checked)"><div class="ttrack"></div></label>
+      </div>`:''}
+      ${mode!=='drawing'?`<div class="rrow">
+        <div><div class="rlbl">Blind Mode</div><div class="rsub">Players see word only — no role shown</div></div>
+        <label class="tog"><input type="checkbox" ${SS.blind?'checked':''} onchange="SS.blind=this.checked;render()"><div class="ttrack"></div></label>
+      </div>`:''}
+    </div>
+    <div class="sp" style="min-height:20px"></div>
+    <button class="btn btn-gold" onclick="step2proceed()">Continue →</button>
+  </div>`;
+}
+
+function rS3(){
+  const{mode,cat}=SS;
+  const cats=mode==='drawing'?[
+    {k:'animals',i:'🐾',n:'Animals'},{k:'food',i:'🍕',n:'Food'},{k:'sports',i:'⚽',n:'Sports'},{k:'objects',i:'📦',n:'Objects'},{k:'nature',i:'🌿',n:'Nature'}
+  ]:[
+    {k:'animals',i:'🐾',n:'Animals'},{k:'food',i:'🍕',n:'Food'},{k:'sports',i:'⚽',n:'Sports'},{k:'objects',i:'📦',n:'Objects'},{k:'places',i:'📍',n:'Places'},{k:'movies',i:'🎬',n:'Movies & Shows'}
+  ];
+  return`<div class="scr">
+    <button class="bk" onclick="SS.step=2;render()">← Back</button>
+    ${stepBar(3)}
+    <div class="sh">Category</div>
+    <div class="ss">Pick the word category</div>
+    <div class="cgrid">
+      ${cats.map(c=>`<div class="ccard${cat===c.k?' on':''}" onclick="selCat('${c.k}')">
+        <div class="cico">${c.i}</div><div class="cname">${c.n}</div>
+      </div>`).join('')}
+    </div>
+    <div class="sp" style="min-height:20px"></div>
+    <button class="btn btn-gold" ${cat?'':'disabled'} onclick="startGame()">Start →</button>
+  </div>`;
+}
+
+function rAssign(){
+  const{roles,aIdx,blind}=GS;const cur=roles[aIdx];
+  const p=gProf(cur.pid);const role=cur.role;
+  const isWG=role==='whiteguy';
+  const isBlind=blind&&!isWG;
+  const rName=isWG?'White Guy':role[0].toUpperCase()+role.slice(1);
+  const fCls=isBlind?'fwg':(role==='civilian'?'fciv':role==='impostor'?'fimp':'fwg');
+  let cardInner='';
+  if(isBlind){
+    cardInner=`<div class="cdiv"></div><div class="cwlbl">Your word</div><div class="cword">${esc(cur.word||'')}</div>`;
+  }else{
+    let wordSec='';
+    if(role==='civilian'||role==='impostor'){
+      wordSec=`<div class="cdiv"></div><div class="cwlbl">${role==='impostor'?'Your decoy':'The word'}</div><div class="cword">${esc(cur.word||'')}</div>`;
+    }else{
+      wordSec=`<div class="cdiv"></div><div class="cnone">— no word —</div>`;
+    }
+    cardInner=`<div class="clbl">You are</div><div class="crole">${rName}</div>${wordSec}`;
+  }
+  return`<div class="ascr">
+    <div class="plbl">Pass to</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:20px">
+      ${avatar(p,'dot-lg')}
+      <div class="pname">${esc(p?p.name:'?')}</div>
+    </div>
+    <div class="cwrap">
+      <div class="flip" id="fc" onclick="revealCard()">
+        <div class="face fback">
+          <div class="flogo">IMPOSTA</div>
+          <div class="fhint">Tap to reveal</div>
+        </div>
+        <div class="face ffront ${fCls}">
+          ${cardInner}
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-gold done-btn" onclick="advAssign()">Done →</button>
+  </div>`;
+}
+
+function rInfo(){
+  const{mode,roles,rand,initImp,allImp}=GS;
+  const mLabel={classic:'Classic',prompt:'Prompt',drawing:'Drawing',randomizer:'Randomizer'}[mode]||mode;
+  const impN=roles.filter(r=>r.role==='impostor').length;
+  const wgN=roles.filter(r=>r.role==='whiteguy').length;
+  const civN=roles.filter(r=>r.role==='civilian').length;
+  const roleRows=rand
+    ?`<div class="irow"><div class="ik">Roles</div><div class="iv myst">??? ??? ???</div></div>`
+    :`<div class="irow"><div class="ik">Civilians</div><div class="iv">${civN}</div></div>
+      <div class="irow"><div class="ik">Impostors</div><div class="iv" style="color:var(--red)">${impN}</div></div>
+      ${wgN?`<div class="irow"><div class="ik">White Guy</div><div class="iv" style="color:var(--t2)">1</div></div>`:''}`;
+  return`<div class="scr">
+    <div class="sh">Game Info</div>
+    <div class="ss">Share this before you start discussing</div>
+    <div class="icard" style="margin-bottom:16px">
+      <div class="irow"><div class="ik">Mode</div><div class="iv">${mLabel}</div></div>
+      <div class="irow"><div class="ik">Players</div><div class="iv">${roles.length}</div></div>
+      ${roleRows}
+    </div>
+    ${mode==='drawing'?`<div class="note" style="margin-bottom:16px">Reveal the word one detail at a time each round — don't show it outright.</div>`:''}
+    <div class="sp"></div>
+    <button class="btn btn-gold" onclick="nav('discussion')">Start →</button>
+  </div>`;
+}
+
+function rDisc(){
+  const{alive}=GS;
+  const pills=alive.map(id=>{const p=gProf(id);return`<div class="ppill">${avatar(p,'dot-sm')}<div style="font-size:14px;font-weight:500">${esc(p?p.name:'?')}</div></div>`;}).join('');
+  return`<div class="scr">
+    <div class="bigtxt">DISCUSS</div>
+    <div style="font-size:13px;color:var(--t3);margin-bottom:24px">${alive.length} remaining</div>
+    <div class="stk g8" style="margin-bottom:24px">${pills}</div>
+    <div class="sp"></div>
+    <button class="btn btn-gold" onclick="nav('voting')">Ready to Vote →</button>
+  </div>`;
+}
+
+function rVote(){
+  const{alive}=GS;
+  const items=alive.map(id=>{const p=gProf(id);const on=voteTarget===id;return`<div class="vitem${on?' on':''}" onclick="selVote('${id}')">
+    ${avatar(p,'dot-v')}
+    <div class="vname">${esc(p?p.name:'?')}</div>
+    ${on?`<div class="vx">✕</div>`:''}
+  </div>`;}).join('');
+  return`<div class="scr">
+    <div class="sh">Vote</div>
+    <div class="ss">Who's getting voted out?</div>
+    <div class="stk g8" style="margin-bottom:20px">${items}</div>
+    <div class="sp"></div>
+    <button class="btn btn-red" ${voteTarget?'':'disabled'} onclick="confirmVote()">Confirm Vote</button>
+  </div>`;
+}
+
+function rReveal(){
+  const vid=pendingVoted;const re=GS.roles.find(r=>r.pid===vid);
+  if(!re){nav('discussion');return'';}
+  const p=gProf(vid);const{role,word}=re;
+  const rName=role==='whiteguy'?'White Guy':role[0].toUpperCase()+role.slice(1);
+  const rCls=role==='civilian'?'rciv':role==='impostor'?'rimp':'rwg';
+  const isWG=role==='whiteguy';
+  const win=!isWG?checkWin(vid):null;
+  if(win)winRes=win;
+  let wSec='';
+  if(role==='civilian'||role==='impostor'){
+    wSec=`<div class="rwlbl">${role==='impostor'?'Their decoy':'The word'}</div><div class="rword">${esc(word||'')}</div>`;
+  }else{
+    wSec=`<div style="font-size:12px;color:var(--t3);margin-top:10px">Had no word</div>`;
+  }
+  let action='';
+  if(isWG)action=`<button class="btn btn-gold" onclick="nav('whiteguess')">They get to guess →</button>`;
+  else if(win)action=`<button class="btn btn-gold" onclick="goToWin()">See Results →</button>`;
+  else action=`<button class="btn btn-surf" onclick="nav('discussion')">Continue →</button>`;
+  return`<div class="rscr">
+    <div class="rlbl">Voted out</div>
+    <div class="rname">${esc(p?p.name:'?')}</div>
+    <div class="rcard ${rCls}">
+      <div class="rwas">They were</div>
+      <div class="rrole">${rName}</div>
+      ${wSec}
+    </div>
+    ${action}
+  </div>`;
+}
+
+function rWGGuess(){
+  const p=gProf(pendingVoted);
+  return`<div class="scr">
+    <div class="sh">Last Chance</div>
+    <div style="font-size:14px;color:var(--t2);margin-bottom:4px">${esc(p?p.name:'?')} was the White Guy.</div>
+    <div style="font-size:13px;color:var(--t3);margin-bottom:28px">Guess the word to win — or go down with the ship.</div>
+    <input class="inp" id="wgg" placeholder="Type your guess…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div style="margin-top:12px"></div>
+    <button class="btn btn-gold wg-btn" onclick="submitGuess()">Confirm Guess</button>
+    <div id="gr" style="display:none;text-align:center;margin-top:20px"></div>
+    <div id="gc" style="display:none;margin-top:12px"></div>
+  </div>`;
+}
+
+function rWin(){
+  if(!winRes){nav('home');return'';}
+  const ps=gP();const gp=id=>ps.find(p=>p.id===id);
+  const titles={civ_win:'CIVILIANS WIN',solo_win:'IMPOSTOR WINS',imp_win:'IMPOSTORS WIN',wg_win:'WHITE GUY WINS',surv_win:'SURVIVORS WIN'};
+  const subs={civ_win:'The impostors have been rooted out',solo_win:winRes.big?'Flawless — survived the whole way':'Survived the vote',imp_win:'Made it to the final two',wg_win:'Correct guess — and the impostors ride with it',surv_win:'No impostors — last two standing claimed it'};
+  const pts={};
+  switch(winRes.type){
+    case'civ_win':winRes.winners.forEach(id=>pts[id]=1);break;
+    case'solo_win':pts[winRes.winners[0]]=winRes.big?3:1;break;
+    case'imp_win':winRes.winners.forEach(id=>pts[id]=1);break;
+    case'wg_win':pts[winRes.wgId]=3;winRes.winners.filter(id=>id!==winRes.wgId).forEach(id=>pts[id]=1);break;
+    case'surv_win':winRes.winners.forEach(id=>pts[id]=1);break;
+  }
+  const items=(winRes.winners||[]).map(id=>{const p=gp(id);return`<div class="witem">
+    ${avatar(p,'dot-v')}
+    <div><div class="wname">${esc(p?p.name:'?')}</div><div class="wscore">${p?p.score||0:0} pts total</div></div>
+    <div class="wpts">+${pts[id]||0}</div>
+  </div>`}).join('');
+  return`<div class="wscr">
+    <div class="wbig">${titles[winRes.type]||'GAME OVER'}</div>
+    <div class="wsub">${subs[winRes.type]||''}</div>
+    <div class="stk g8" style="width:100%;margin-bottom:28px">${items}</div>
+    <div class="sp"></div>
+    <div class="stk g8" style="width:100%">
+      <button class="btn btn-gold" onclick="nav('scoreboard')">View Scoreboard</button>
+      <button class="btn btn-surf" onclick="playAgain()">Play Again</button>
+      <button class="btn btn-ghost" onclick="nav('home')">Back to Home</button>
+    </div>
+  </div>`;
+}
+
+function rScore(){
+  const ps=[...gP()].sort((a,b)=>(b.score||0)-(a.score||0));
+  const items=ps.length===0
+    ?`<div class="note">No scores yet. Play a game first.</div>`
+    :ps.map((p,i)=>`<div class="scitem" onclick="openDetail('${p.id}')" style="cursor:pointer">
+      <div class="scrank${i<3?' top':''}">${i+1}</div>
+      ${avatar(p,'dot-lg')}
+      <div style="flex:1;min-width:0">
+        <div class="scname">${esc(p.name)}</div>
+        <div style="font-size:12px;color:var(--t3)">${winrateStr(p)} win rate</div>
+      </div>
+      <div class="scpts">${p.score||0}</div>
+    </div>`).join('');
+  return`<div class="scr">
+    <button class="bk" onclick="nav('home')">← Back</button>
+    <div class="sh">Scoreboard</div>
+    <div class="ss">Tap a player for stats</div>
+    <div class="stk g8">${items}</div>
+  </div>`;
+}
+
+function rProfDetail(){
+  if(!detailId){nav('scoreboard');return'';}
+  const p=gProf(detailId);if(!p){nav('scoreboard');return'';}
+  const w=p.wins||0;const l=p.losses||0;const g=w+l;
+  const wr=g?Math.round(w/g*100)+'%':'—';
+  const rs=p.roleStats||{};
+  const civ=rs.civilian||{wins:0,games:0};
+  const imp=rs.impostor||{wins:0,games:0};
+  const wg=rs.whiteguy||{wins:0,games:0};
+  const rWR=r=>r.games?Math.round(r.wins/r.games*100)+'%':'—';
+  const rRec=r=>r.games?`<span style="font-size:12px;color:var(--t3);font-family:var(--fb);margin-left:8px">${r.wins}/${r.games}</span>`:'';
+  return`<div class="scr">
+    <button class="bk" onclick="nav('scoreboard')">← Scoreboard</button>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px">
+      ${avatar(p,'dot-lg')}
+      <div><div style="font-size:18px;font-weight:600">${esc(p.name)}</div><div style="font-size:13px;color:var(--t3)">${p.score||0} pts total</div></div>
+    </div>
+    <div class="icard" style="margin-bottom:12px">
+      <div style="text-align:center;padding:10px 0 16px">
+        <div style="font-family:var(--fd);font-size:64px;line-height:1;letter-spacing:.03em">${wr}</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:4px">overall win rate</div>
+      </div>
+      <div class="irow"><div class="ik">Wins</div><div class="iv" style="color:var(--gold)">${w}</div></div>
+      <div class="irow"><div class="ik">Losses</div><div class="iv">${l}</div></div>
+      <div class="irow" style="border-bottom:none"><div class="ik">Games</div><div class="iv">${g}</div></div>
+    </div>
+    <div class="icard">
+      <div class="irow"><div class="ik">Civilian</div><div class="iv">${rWR(civ)}${rRec(civ)}</div></div>
+      <div class="irow"><div class="ik" style="color:var(--red)">Impostor</div><div class="iv">${rWR(imp)}${rRec(imp)}</div></div>
+      <div class="irow" style="border-bottom:none"><div class="ik" style="color:var(--t2)">White Guy</div><div class="iv">${rWR(wg)}${rRec(wg)}</div></div>
+    </div>
+  </div>`;
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{
+  render();
+  if('serviceWorker' in navigator){
+    const sw=`const C='imposta-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./'])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
+    const blob=new Blob([sw],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(blob),{scope:'./'}).catch(()=>{});
+  }
+});
+</script>
+</body>
+</html>
