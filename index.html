@@ -11,7 +11,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-<link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;IMPOSTA&quot;,&quot;short_name&quot;:&quot;IMPOSTA&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%230C0808&quot;,&quot;theme_color&quot;:&quot;%230C0808&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230C0808'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='300' font-weight='bold' fill='%23E8B84B'>I</text></svg>&quot;,&quot;sizes&quot;:&quot;any&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>
 :root{
   --bg:#0C0808;--s1:#181010;--s2:#201515;--s3:#2C1C1C;
@@ -53,6 +55,11 @@ body{color:var(--txt);font-family:var(--fb);font-size:15px;line-height:1.5}
 /* Screen header */
 .sh{font-family:var(--fd);font-size:40px;line-height:1;letter-spacing:.03em;margin-bottom:6px}
 .ss{font-size:13px;color:var(--t2);margin-bottom:28px}
+.sec-h{font-family:var(--fd);font-size:24px;letter-spacing:.02em;margin:32px 0 12px}
+
+/* Quick-load group chips */
+.gchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.gchip{flex:0 0 auto}
 
 /* Stacks / spacing */
 .stk{display:flex;flex-direction:column}
@@ -274,9 +281,11 @@ const PROMPTS=[
 ];
 
 // ── STORAGE ──
-const SK={p:'imposta_p',u:'imposta_u'};
+const SK={p:'imposta_p',u:'imposta_u',g:'imposta_g'};
 function gP(){try{return JSON.parse(localStorage.getItem(SK.p))||[];}catch{return[];}}
 function sP(a){localStorage.setItem(SK.p,JSON.stringify(a));}
+function gG(){try{return JSON.parse(localStorage.getItem(SK.g))||[];}catch{return[];}}
+function sG(a){localStorage.setItem(SK.g,JSON.stringify(a));}
 function gUsed(k){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};return a[k]||[];}catch{return[];}}
 function addUsed(k,i){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};a[k]=[...(a[k]||[]),i];localStorage.setItem(SK.u,JSON.stringify(a));}catch{}}
 function resetUsed(k){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};a[k]=[];localStorage.setItem(SK.u,JSON.stringify(a));}catch{}}
@@ -316,6 +325,9 @@ let scoresApplied=false;
 let editId=null;
 let editSt={name:'',color:'',photo:null};
 let detailId=null;
+let editGroupId=null;
+let addG=false;
+let dataPanel=null;
 
 // ── NAVIGATION ──
 function nav(s){scr=s;render();requestAnimationFrame(()=>{const a=document.getElementById('app');if(a)a.scrollTop=0;});}
@@ -463,13 +475,74 @@ function saveEdit(){
   if(p){p.name=name;p.color=editSt.color;p.photo=editSt.photo||null;sP(ps);}
   editId=null;render();
 }
-function delProf(id){if(!confirm('Delete this profile?'))return;sP(gP().filter(p=>p.id!==id));if(editId===id)editId=null;render();}
+function delProf(id){if(!confirm('Delete this profile?'))return;sP(gP().filter(p=>p.id!==id));sG(gG().map(g=>({...g,profileIds:g.profileIds.filter(pid=>pid!==id)})));if(editId===id)editId=null;render();}
 function swatchEdit(el,c){editSt.color=c;el.closest('.ebox').querySelectorAll('.sw').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
 function swatchNew(el,c){SS.newColor=c;el.closest('.ebox').querySelectorAll('.sw').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
 function saveNewProf(){
   const name=(document.getElementById('nn')?.value||'').trim();if(!name)return;
   const ps=gP();ps.push({id:uid(),name,color:SS.newColor,photo:SS.newPhoto||null,score:0,wins:0,losses:0,roleStats:{civilian:{wins:0,games:0},impostor:{wins:0,games:0},whiteguy:{wins:0,games:0}}});sP(ps);
   SS.addP=false;SS.newName='';SS.newColor=COLORS[ps.length%COLORS.length];SS.newPhoto=null;render();
+}
+
+// ── GROUP ACTIONS ──
+function toggleGroupEdit(id){editGroupId=editGroupId===id?null:id;render();setTimeout(()=>{const i=document.getElementById('gen');if(i)i.focus();},60);}
+function saveGroupName(){
+  const v=(document.getElementById('gen')?.value||'').trim();
+  const gs=gG();const g=gs.find(x=>x.id===editGroupId);
+  if(g&&v){g.name=v;sG(gs);}
+  editGroupId=null;render();
+}
+function delGroup(id){if(!confirm('Delete this group?'))return;sG(gG().filter(g=>g.id!==id));if(editGroupId===id)editGroupId=null;render();}
+function toggleGroupMember(gid,pid){
+  const gs=gG();const g=gs.find(x=>x.id===gid);if(!g)return;
+  const i=g.profileIds.indexOf(pid);if(i===-1)g.profileIds.push(pid);else g.profileIds.splice(i,1);
+  sG(gs);render();
+}
+function saveNewGroup(){
+  const v=(document.getElementById('ngn')?.value||'').trim();if(!v)return;
+  const gs=gG();gs.push({id:uid(),name:v,profileIds:[]});sG(gs);
+  addG=false;render();
+}
+function toggleGroupSelect(gid){
+  const g=gG().find(x=>x.id===gid);if(!g||!g.profileIds.length)return;
+  const allIn=g.profileIds.every(id=>SS.ids.includes(id));
+  if(allIn)SS.ids=SS.ids.filter(id=>!g.profileIds.includes(id));
+  else g.profileIds.forEach(id=>{if(!SS.ids.includes(id))SS.ids.push(id);});
+  render();
+}
+
+// ── DATA EXPORT/IMPORT ──
+function toggleDataPanel(p){dataPanel=dataPanel===p?null:p;render();
+  if(dataPanel==='export')setTimeout(()=>{const t=document.getElementById('expTa');if(t)t.select();},60);
+}
+function copyExportData(){
+  const t=document.getElementById('expTa');if(!t)return;
+  t.select();
+  try{navigator.clipboard.writeText(t.value).then(()=>alert('Copied to clipboard.'));}
+  catch{document.execCommand('copy');alert('Copied to clipboard.');}
+}
+function shareExportData(){
+  const t=document.getElementById('expTa');if(!t)return;
+  if(navigator.share){navigator.share({title:'IMPOSTA Export',text:t.value}).catch(()=>{});}
+  else copyExportData();
+}
+function handleImportFile(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{const t=document.getElementById('impTa');if(t)t.value=r.result;};
+  r.readAsText(f);
+}
+function importData(){
+  const t=document.getElementById('impTa');if(!t||!t.value.trim())return;
+  let data;try{data=JSON.parse(t.value);}catch{alert("Could not read that — make sure it's a full export.");return;}
+  const ps=gP();const pIds=new Set(ps.map(p=>p.id));let addedP=0;
+  (data.profiles||[]).forEach(np=>{if(np&&np.id&&!pIds.has(np.id)){ps.push(np);pIds.add(np.id);addedP++;}});
+  sP(ps);
+  const gs=gG();const gIds=new Set(gs.map(g=>g.id));let addedG=0;
+  (data.groups||[]).forEach(ng=>{if(ng&&ng.id&&!gIds.has(ng.id)){gs.push(ng);gIds.add(ng.id);addedG++;}});
+  sG(gs);
+  dataPanel=null;render();
+  alert(`Imported ${addedP} profile(s) and ${addedG} group(s).`);
 }
 
 // ── SETUP ACTIONS ──
@@ -609,6 +682,65 @@ function rProfiles(){
     </div>`;
   }
 
+  // ── GROUPS ──
+  const gs=gG();
+  function memberChips(g){
+    return ps.map(p=>`<div class="pchip${g.profileIds.includes(p.id)?' on':''}" onclick="toggleGroupMember('${g.id}','${p.id}')">
+      ${avatar(p,'dot-sm')}
+      <div class="pchip-name">${esc(p.name)}</div>
+      ${g.profileIds.includes(p.id)?'<div class="pchip-ck">✓</div>':''}
+    </div>`).join('');
+  }
+  const groupList=gs.map(g=>{
+    const n=g.profileIds.length;const expanded=editGroupId===g.id;
+    return`<div>
+      <div class="pi" onclick="${expanded?'saveGroupName()':`toggleGroupEdit('${g.id}')`}">
+        <div class="dot dot-lg" style="background:var(--s3);color:var(--t2)">${ini(g.name)}</div>
+        <div style="flex:1;min-width:0"><div class="p-name">${esc(g.name)}</div><div class="p-score">${n} member${n===1?'':'s'}</div></div>
+        <div onclick="event.stopPropagation()"><button class="ico" onclick="delGroup('${g.id}')">✕</button></div>
+      </div>
+      ${expanded?`<div class="ebox">
+        <div style="margin-bottom:12px"><input class="inp" id="gen" value="${esc(g.name)}" placeholder="Group name" maxlength="24"></div>
+        ${ps.length?`<div class="pgrid">${memberChips(g)}</div>`:`<div class="note">No profiles yet — add some first.</div>`}
+        <button class="btn btn-gold" style="margin-top:14px" onclick="saveGroupName()">Done</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+
+  let addGSec='';
+  if(addG){
+    addGSec=`<div class="ebox">
+      <div style="margin-bottom:12px"><input class="inp" id="ngn" placeholder="Group name" maxlength="24"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-gold" style="flex:1" onclick="saveNewGroup()">Create</button>
+        <button class="btn btn-ghost btn-sm" style="width:auto;padding:10px 16px" onclick="addG=false;render()">Cancel</button>
+      </div>
+    </div>`;
+  }
+
+  // ── DATA EXPORT/IMPORT ──
+  const exportStr=JSON.stringify({profiles:ps,groups:gs});
+  let dataSec='';
+  if(dataPanel==='export'){
+    dataSec=`<div class="ebox">
+      <textarea class="inp" id="expTa" readonly style="min-height:120px;font-size:11px;font-family:monospace;resize:vertical">${esc(exportStr)}</textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-gold" style="flex:1" onclick="copyExportData()">Copy</button>
+        <button class="btn btn-surf" style="flex:1" onclick="shareExportData()">Share</button>
+      </div>
+    </div>`;
+  }else if(dataPanel==='import'){
+    dataSec=`<div class="ebox">
+      <textarea class="inp" id="impTa" placeholder="Paste exported data here" style="min-height:120px;font-size:11px;font-family:monospace;resize:vertical"></textarea>
+      <input type="file" id="impFile" accept=".json,.txt,application/json" style="display:none" onchange="handleImportFile(this)">
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-surf" style="flex:1" onclick="document.getElementById('impFile').click()">Choose File</button>
+        <button class="btn btn-gold" style="flex:1" onclick="importData()">Import</button>
+      </div>
+      <div class="note" style="margin-top:10px">Existing profiles and groups are kept as-is — only new ones (by ID) get added.</div>
+    </div>`;
+  }
+
   return`<div class="scr">
     <button class="bk" onclick="nav('home')">← Back</button>
     <div class="sh">Profiles</div>
@@ -616,6 +748,21 @@ function rProfiles(){
     <div class="stk g8">
       ${list}
       ${!SS.addP?`<div class="add-chip" onclick="SS.addP=true;render()">+ New Profile</div>`:addSec}
+    </div>
+
+    <div class="sec-h">Groups</div>
+    <div class="stk g8">
+      ${groupList}
+      ${!addG?`<div class="add-chip" onclick="addG=true;render()">+ New Group</div>`:addGSec}
+    </div>
+
+    <div class="sec-h">Data</div>
+    <div class="stk g8">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-surf" style="flex:1" onclick="toggleDataPanel('export')">${dataPanel==='export'?'Hide Export':'Export Data'}</button>
+        <button class="btn btn-surf" style="flex:1" onclick="toggleDataPanel('import')">${dataPanel==='import'?'Hide Import':'Import Data'}</button>
+      </div>
+      ${dataSec}
     </div>
   </div>`;
 }
@@ -635,6 +782,15 @@ function rS1(){
   const ps=gP();const sel=SS.ids;
   const mLabel={classic:'Classic',prompt:'Prompt',drawing:'Drawing',randomizer:'Randomizer'}[SS.mode]||'';
   const total=SS.mode==='prompt'||SS.mode==='randomizer'?2:3;
+
+  const groups=gG().filter(g=>g.profileIds.length>0);
+  const groupChips=groups.length?`<div class="gchips">${groups.map(g=>{
+    const allIn=g.profileIds.every(id=>sel.includes(id));
+    return`<div class="pchip gchip${allIn?' on':''}" onclick="toggleGroupSelect('${g.id}')">
+      <div class="pchip-name">👥 ${esc(g.name)}</div>
+      ${allIn?`<div class="pchip-ck">✓</div>`:''}
+    </div>`;
+  }).join('')}</div>`:'';
 
   const chips=ps.map(p=>`<div class="pchip${sel.includes(p.id)?' on':''}" onclick="toggleP('${p.id}')">
     ${avatar(p,'dot-sm')}
@@ -667,6 +823,7 @@ function rS1(){
     ${stepBar(total)}
     <div class="sh">Players</div>
     <div class="ss">${sel.length} selected — need at least 2</div>
+    ${groupChips}
     <div class="pgrid" style="margin-bottom:10px">
       ${chips}
       ${!SS.addP?`<div class="add-p" onclick="SS.addP=true;render()">+ New</div>`:''}
@@ -990,9 +1147,7 @@ function rProfDetail(){
 document.addEventListener('DOMContentLoaded',()=>{
   render();
   if('serviceWorker' in navigator){
-    const sw=`const C='imposta-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./'])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
-    const blob=new Blob([sw],{type:'application/javascript'});
-    navigator.serviceWorker.register(URL.createObjectURL(blob),{scope:'./'}).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
   }
 });
 </script>
