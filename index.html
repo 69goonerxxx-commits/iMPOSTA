@@ -128,6 +128,7 @@ body{color:var(--txt);font-family:var(--fb);font-size:15px;line-height:1.5}
 
 /* SETUP – roles */
 .rrow{display:flex;align-items:center;justify-content:space-between;background:var(--glift);border:1px solid var(--bdr);border-radius:var(--r);padding:16px}
+.rrow.disabled{opacity:.45}
 .rlbl{font-size:15px;font-weight:500}
 .rsub{font-size:12px;color:var(--t3);margin-top:2px}
 .sctrl{display:flex;align-items:center;gap:14px}
@@ -173,6 +174,7 @@ input:checked+.ttrack::after{transform:translateX(20px);background:#0C0808}
 .cwlbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
 .cword{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center}
 .cnone{font-size:13px;color:var(--t3)}
+.ctag{font-size:12px;color:var(--gold);text-align:center;max-width:220px;line-height:1.4}
 .done-btn{opacity:0;transition:opacity .3s;pointer-events:none}
 
 /* GAME INFO */
@@ -225,10 +227,15 @@ input:checked+.ttrack::after{transform:translateX(20px);background:#0C0808}
 .scpts{margin-left:auto;font-family:var(--fd);font-size:28px;letter-spacing:.02em}
 
 @media (prefers-reduced-motion:reduce){.flip,.btn,.mc,.pchip,.vitem{transition:none}}
+
+/* PWA update banner */
+.update-banner{position:fixed;left:16px;right:16px;bottom:16px;background:var(--gold);color:var(--bg);font-family:var(--fb);font-weight:600;font-size:14px;text-align:center;padding:14px 16px;border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer;display:none;z-index:9999;-webkit-user-select:none;user-select:none}
+.update-banner:active{opacity:.8}
 </style>
 </head>
 <body>
 <div id="app"></div>
+<div id="updateBanner" class="update-banner" onclick="location.reload()">↻ New version available — tap to refresh</div>
 <script>
 // ── COLORS ──
 const COLORS=['#E8B84B','#C63535','#4A8FD4','#4CAF50','#9B59B6','#FF7043','#E91E8C','#00BCD4','#26A69A','#FF5722','#7986CB','#A1887F'];
@@ -281,11 +288,13 @@ const PROMPTS=[
 ];
 
 // ── STORAGE ──
-const SK={p:'imposta_p',u:'imposta_u',g:'imposta_g'};
+const SK={p:'imposta_p',u:'imposta_u',g:'imposta_g',lg:'imposta_lastgroup'};
 function gP(){try{return JSON.parse(localStorage.getItem(SK.p))||[];}catch{return[];}}
 function sP(a){localStorage.setItem(SK.p,JSON.stringify(a));}
 function gG(){try{return JSON.parse(localStorage.getItem(SK.g))||[];}catch{return[];}}
 function sG(a){localStorage.setItem(SK.g,JSON.stringify(a));}
+function gLG(){return localStorage.getItem(SK.lg)||null;}
+function sLG(id){localStorage.setItem(SK.lg,id);}
 function gUsed(k){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};return a[k]||[];}catch{return[];}}
 function addUsed(k,i){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};a[k]=[...(a[k]||[]),i];localStorage.setItem(SK.u,JSON.stringify(a));}catch{}}
 function resetUsed(k){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};a[k]=[];localStorage.setItem(SK.u,JSON.stringify(a));}catch{}}
@@ -293,6 +302,7 @@ function addScore(id,pts){const ps=gP();const p=ps.find(x=>x.id===id);if(p){p.sc
 
 // ── UTILS ──
 function uid(){return Math.random().toString(36).slice(2,10);}
+function vib(pattern){if(navigator.vibrate)navigator.vibrate(pattern);}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 function ini(n){return(n||'?')[0].toUpperCase();}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -316,7 +326,7 @@ function pickPrompt(){
 
 // ── APP STATE ──
 let scr='home';
-let SS={step:1,mode:null,ids:[],imp:1,wg:false,rand:false,cat:null,addP:false,newName:'',newColor:COLORS[0]};
+let SS={step:1,mode:null,ids:[],imp:1,wg:false,mime:false,ghost:false,rand:false,cat:null,addP:false,newName:'',newColor:COLORS[0]};
 let GS=null;
 let voteTarget=null;
 let pendingVoted=null;
@@ -326,16 +336,39 @@ let editId=null;
 let editSt={name:'',color:'',photo:null};
 let detailId=null;
 let editGroupId=null;
+let groupNameDraft=null;
 let addG=false;
+let newGroupDraft='';
 let dataPanel=null;
 
 // ── NAVIGATION ──
 function nav(s){scr=s;render();requestAnimationFrame(()=>{const a=document.getElementById('app');if(a)a.scrollTop=0;});}
-function render(){const a=document.getElementById('app');if(!a)return;const map={home:rHome,profiles:rProfiles,setup:rSetup,assignment:rAssign,gameinfo:rInfo,discussion:rDisc,voting:rVote,rolereveal:rReveal,whiteguess:rWGGuess,win:rWin,scoreboard:rScore,randpicker:rRandPicker,profdetail:rProfDetail};const fn=map[scr];if(fn)a.innerHTML=fn();else a.innerHTML=rHome();}
+let _lastEditId=null,_lastEditGroupId=null;
+function render(){
+  const a=document.getElementById('app');if(!a)return;
+  if(editId!==null&&editId===_lastEditId){
+    const en=document.getElementById('en');if(en)editSt.name=en.value;
+  }
+  if(editGroupId!==null&&editGroupId===_lastEditGroupId){
+    const gen=document.getElementById('gen');if(gen)groupNameDraft=gen.value;
+  }
+  const nn=document.getElementById('nn');if(nn)SS.newName=nn.value;
+  const inn=document.getElementById('inn');if(inn)SS.newName=inn.value;
+  const ngn=document.getElementById('ngn');if(ngn)newGroupDraft=ngn.value;
+  _lastEditId=editId;_lastEditGroupId=editGroupId;
+  const map={home:rHome,profiles:rProfiles,setup:rSetup,assignment:rAssign,gameinfo:rInfo,discussion:rDisc,voting:rVote,rolereveal:rReveal,whiteguess:rWGGuess,win:rWin,scoreboard:rScore,randpicker:rRandPicker,profdetail:rProfDetail};
+  const fn=map[scr];
+  if(fn)a.innerHTML=fn();else a.innerHTML=rHome();
+}
 
 // ── GAME INIT ──
-function startSetup(mode){SS={step:1,mode,ids:[],imp:1,wg:false,rand:false,randMode:null,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
-function startSetupRand(rm){SS={step:1,mode:'randomizer',ids:[],imp:1,wg:false,rand:true,randMode:rm,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
+function preloadLastGroup(){
+  const lg=gLG();if(!lg)return[];
+  const g=gG().find(x=>x.id===lg);if(!g)return[];
+  const ps=gP();return g.profileIds.filter(id=>ps.some(p=>p.id===id));
+}
+function startSetup(mode){SS={step:1,mode,ids:preloadLastGroup(),imp:1,wg:false,mime:false,ghost:false,rand:false,randMode:null,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
+function startSetupRand(rm){SS={step:1,mode:'randomizer',ids:preloadLastGroup(),imp:1,wg:false,mime:false,ghost:false,rand:true,randMode:rm,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
 
 function startGame(){
   const{mode,ids,imp,wg,rand,cat,blind,randMode}=SS;
@@ -378,6 +411,13 @@ function startGame(){
       else if(aWG&&i===aImp){roles.push({pid:id,role:'whiteguy',word:null});}
       else{roles.push({pid:id,role:'civilian',word:pd?pd.b:(wd?wd.w:'???')});}
     });
+  }
+
+  if(!blind&&(SS.mime||SS.ghost)){
+    const civIdx=shuffle(roles.map((r,i)=>r.role==='civilian'?i:-1).filter(i=>i!==-1));
+    let ci=0;
+    if(SS.mime&&ci<civIdx.length)roles[civIdx[ci++]].tag='mime';
+    if(SS.ghost&&ci<civIdx.length)roles[civIdx[ci++]].tag='ghost';
   }
 
   GS={mode:rMode,wd,pd,roles,alive:[...sh],initImp:aImp,allImp,rand,randMode:randMode||null,aIdx:0,initN:total,players:ids,blind};
@@ -426,7 +466,7 @@ function applyScores(res){
     case'surv_win':res.winners.forEach(id=>addScore(id,1));break;
   }
 }
-function goToWin(){if(winRes&&!scoresApplied){applyScores(winRes);applyStats(winRes);scoresApplied=true;}nav('win');}
+function goToWin(){vib([30,60,30,60,30]);if(winRes&&!scoresApplied){applyScores(winRes);applyStats(winRes);scoresApplied=true;}nav('win');}
 
 function applyStats(res){
   if(!res)return;
@@ -462,7 +502,7 @@ async function handlePhotoEdit(inp){if(!inp.files||!inp.files[0])return;editSt.p
 async function handlePhotoNew(inp){if(!inp.files||!inp.files[0])return;SS.newPhoto=await compressImage(inp.files[0]);render();}
 function avatar(p,cls){
   if(p&&p.photo)return`<img src="${p.photo}" class="dot ${cls}" style="display:block;object-fit:cover">`;
-  return`<div class="dot ${cls}" style="background:${p?p.color:'#888'}">${ini(p?p.name:'?')}</div>`;
+  return`<div class="dot ${cls}" style="background:${p&&p.color?p.color:'#888'}">${ini(p?p.name:'?')}</div>`;
 }
 
 // ── PROFILE ACTIONS ──
@@ -485,14 +525,24 @@ function saveNewProf(){
 }
 
 // ── GROUP ACTIONS ──
-function toggleGroupEdit(id){editGroupId=editGroupId===id?null:id;render();setTimeout(()=>{const i=document.getElementById('gen');if(i)i.focus();},60);}
+function toggleGroupEdit(id){
+  if(editGroupId!==null&&editGroupId!==id){
+    const gen=document.getElementById('gen');
+    if(gen){
+      const v=gen.value.trim();
+      if(v){const gs=gG();const g=gs.find(x=>x.id===editGroupId);if(g&&v!==g.name){g.name=v;sG(gs);}}
+    }
+  }
+  editGroupId=editGroupId===id?null:id;groupNameDraft=null;render();setTimeout(()=>{const i=document.getElementById('gen');if(i)i.focus();},60);
+}
 function saveGroupName(){
   const v=(document.getElementById('gen')?.value||'').trim();
   const gs=gG();const g=gs.find(x=>x.id===editGroupId);
   if(g&&v){g.name=v;sG(gs);}
-  editGroupId=null;render();
+  editGroupId=null;groupNameDraft=null;render();
 }
-function delGroup(id){if(!confirm('Delete this group?'))return;sG(gG().filter(g=>g.id!==id));if(editGroupId===id)editGroupId=null;render();}
+function delGroup(id){if(!confirm('Delete this group?'))return;sG(gG().filter(g=>g.id!==id));if(editGroupId===id){editGroupId=null;groupNameDraft=null;}render();}
+function playGroup(gid){const g=gG().find(x=>x.id===gid);if(!g||!g.profileIds.length)return;sLG(gid);nav('home');}
 function toggleGroupMember(gid,pid){
   const gs=gG();const g=gs.find(x=>x.id===gid);if(!g)return;
   const i=g.profileIds.indexOf(pid);if(i===-1)g.profileIds.push(pid);else g.profileIds.splice(i,1);
@@ -500,14 +550,22 @@ function toggleGroupMember(gid,pid){
 }
 function saveNewGroup(){
   const v=(document.getElementById('ngn')?.value||'').trim();if(!v)return;
-  const gs=gG();gs.push({id:uid(),name:v,profileIds:[]});sG(gs);
-  addG=false;render();
+  const gs=gG();gs.push({id:uid(),name:v,profileIds:[],color:COLORS[gs.length%COLORS.length]});sG(gs);
+  addG=false;newGroupDraft='';render();
+}
+function swatchGroup(el,gid,c){
+  const gs=gG();const g=gs.find(x=>x.id===gid);if(!g)return;
+  g.color=c;sG(gs);
+  el.closest('.col-grid').querySelectorAll('.sw').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel');
+  const dot=document.querySelector(`[data-group-dot="${gid}"]`);
+  if(dot)dot.style.background=c;
 }
 function toggleGroupSelect(gid){
   const g=gG().find(x=>x.id===gid);if(!g||!g.profileIds.length)return;
   const allIn=g.profileIds.every(id=>SS.ids.includes(id));
   if(allIn)SS.ids=SS.ids.filter(id=>!g.profileIds.includes(id));
-  else g.profileIds.forEach(id=>{if(!SS.ids.includes(id))SS.ids.push(id);});
+  else{g.profileIds.forEach(id=>{if(!SS.ids.includes(id))SS.ids.push(id);});sLG(gid);}
   render();
 }
 
@@ -539,7 +597,13 @@ function importData(){
   (data.profiles||[]).forEach(np=>{if(np&&np.id&&!pIds.has(np.id)){ps.push(np);pIds.add(np.id);addedP++;}});
   sP(ps);
   const gs=gG();const gIds=new Set(gs.map(g=>g.id));let addedG=0;
-  (data.groups||[]).forEach(ng=>{if(ng&&ng.id&&!gIds.has(ng.id)){gs.push(ng);gIds.add(ng.id);addedG++;}});
+  (data.groups||[]).forEach(ng=>{
+    if(ng&&ng.id&&!gIds.has(ng.id)){
+      const profileIds=Array.isArray(ng.profileIds)?ng.profileIds.filter(id=>pIds.has(id)):[];
+      gs.push({id:ng.id,name:ng.name||'Group',profileIds});
+      gIds.add(ng.id);addedG++;
+    }
+  });
   sG(gs);
   dataPanel=null;render();
   alert(`Imported ${addedP} profile(s) and ${addedG} group(s).`);
@@ -552,14 +616,20 @@ function saveInlineP(){
   const ps=gP();const np={id:uid(),name,color:SS.newColor,photo:SS.newPhoto||null,score:0,wins:0,losses:0,roleStats:{civilian:{wins:0,games:0},impostor:{wins:0,games:0},whiteguy:{wins:0,games:0}}};ps.push(np);sP(ps);
   SS.ids.push(np.id);SS.addP=false;SS.newName='';SS.newColor=COLORS[ps.length%COLORS.length];SS.newPhoto=null;render();
 }
-function adjImp(d){const max=SS.ids.length-(SS.wg?2:1);SS.imp=Math.max(0,Math.min(SS.imp+d,max));render();}
-function togWG(v){SS.wg=v;SS.imp=Math.min(SS.imp,SS.ids.length-(v?2:1));render();}
+function clampTags(){
+  const civN=SS.ids.length-SS.imp-(SS.wg?1:0);
+  if(civN<1){SS.mime=false;SS.ghost=false;}
+  else if(civN<2&&SS.mime&&SS.ghost)SS.ghost=false;
+}
+function adjImp(d){const max=SS.ids.length-(SS.wg?2:1);SS.imp=Math.max(0,Math.min(SS.imp+d,max));clampTags();render();}
+function togWG(v){SS.wg=v;SS.imp=Math.min(SS.imp,SS.ids.length-(v?2:1));clampTags();render();}
 function selCat(k){SS.cat=k;render();}
 function step2proceed(){if(SS.mode==='prompt')startGame();else{SS.step=3;render();}}
 
 // ── GAME ACTIONS ──
 function revealCard(){
   const c=document.getElementById('fc');if(!c||c.classList.contains('flipped'))return;
+  vib(15);
   c.classList.add('flipped');
   setTimeout(()=>{const b=document.querySelector('.done-btn');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}},660);
 }
@@ -569,6 +639,7 @@ function confirmVote(){
   if(!voteTarget)return;
   pendingVoted=voteTarget;voteTarget=null;
   GS.alive=GS.alive.filter(id=>id!==pendingVoted);
+  vib(25);
   nav('rolereveal');
 }
 function submitGuess(){
@@ -579,10 +650,12 @@ function submitGuess(){
   if(!rd)return;
   rd.style.display='block';
   if(correct){
+    vib([20,40,20]);
     rd.innerHTML=`<div style="font-family:var(--fd);font-size:40px;color:var(--gold);letter-spacing:.04em">CORRECT!</div><div style="font-size:13px;color:var(--t2);margin-top:4px">The word was <strong>${esc(actual)}</strong></div>`;
     const res=checkWin(pendingVoted,'correct');winRes=res;if(res){applyScores(res);applyStats(res);scoresApplied=true;}
     if(cd){cd.innerHTML=`<button class="btn btn-gold" onclick="goToWin()">See Results →</button>`;cd.style.display='block';}
   }else{
+    vib(40);
     rd.innerHTML=`<div style="font-family:var(--fd);font-size:40px;color:var(--red);letter-spacing:.04em">WRONG</div>`;
     const res=checkWin(pendingVoted,null);
     if(res){winRes=res;applyScores(res);applyStats(res);scoresApplied=true;if(cd){cd.innerHTML=`<button class="btn btn-gold" onclick="goToWin()">See Results →</button>`;cd.style.display='block';}}
@@ -593,7 +666,7 @@ function submitGuess(){
 }
 function playAgain(){
   const ids=[...(GS.players||[])];const isRand=GS.rand;
-  SS={step:1,mode:isRand?'randomizer':GS.mode,ids,imp:1,wg:false,rand:isRand,randMode:isRand?GS.randMode:null,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};
+  SS={step:1,mode:isRand?'randomizer':GS.mode,ids,imp:1,wg:false,mime:false,ghost:false,rand:isRand,randMode:isRand?GS.randMode:null,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};
   nav('setup');
 }
 
@@ -645,7 +718,7 @@ function rProfiles(){
         ${editSt.photo?`<button class="btn btn-ghost btn-sm" style="width:auto;padding:8px 12px;font-size:12px" onclick="editSt.photo=null;render()">Remove photo</button>`:`<span style="font-size:12px;color:var(--t3)">Tap to add photo</span>`}
         <input type="file" id="phe" accept="image/*" style="display:none" onchange="handlePhotoEdit(this)">
       </div>
-      <div style="margin-bottom:12px"><input class="inp" id="en" value="${esc(p.name)}" placeholder="Name" maxlength="20"></div>
+      <div style="margin-bottom:12px"><input class="inp" id="en" value="${esc(editSt.name)}" placeholder="Name" maxlength="20"></div>
       <div class="col-grid">${COLORS.map(c=>`<div class="sw${c===p.color?' sel':''}" style="background:${c}" data-c="${c}" onclick="swatchEdit(this,'${c}')"></div>`).join('')}</div>
       <div style="display:flex;gap:8px;margin-top:14px">
         <button class="btn btn-gold" style="flex:1" onclick="saveEdit()">Save</button>
@@ -693,14 +766,19 @@ function rProfiles(){
   }
   const groupList=gs.map(g=>{
     const n=g.profileIds.length;const expanded=editGroupId===g.id;
+    const gc=g.color||'var(--s3)';
     return`<div>
       <div class="pi" onclick="${expanded?'saveGroupName()':`toggleGroupEdit('${g.id}')`}">
-        <div class="dot dot-lg" style="background:var(--s3);color:var(--t2)">${ini(g.name)}</div>
+        <div class="dot dot-lg" data-group-dot="${g.id}" style="background:${gc};color:var(--t2)">${ini(g.name)}</div>
         <div style="flex:1;min-width:0"><div class="p-name">${esc(g.name)}</div><div class="p-score">${n} member${n===1?'':'s'}</div></div>
-        <div onclick="event.stopPropagation()"><button class="ico" onclick="delGroup('${g.id}')">✕</button></div>
+        <div onclick="event.stopPropagation()" style="display:flex;gap:6px">
+          ${n?`<button class="ico" onclick="playGroup('${g.id}')" title="Play with this group">▶</button>`:''}
+          <button class="ico" onclick="delGroup('${g.id}')">✕</button>
+        </div>
       </div>
       ${expanded?`<div class="ebox">
-        <div style="margin-bottom:12px"><input class="inp" id="gen" value="${esc(g.name)}" placeholder="Group name" maxlength="24"></div>
+        <div style="margin-bottom:12px"><input class="inp" id="gen" value="${esc(groupNameDraft!==null?groupNameDraft:g.name)}" placeholder="Group name" maxlength="24"></div>
+        <div class="col-grid" style="margin-bottom:14px">${COLORS.map(c=>`<div class="sw${c===gc?' sel':''}" style="background:${c}" onclick="swatchGroup(this,'${g.id}','${c}')"></div>`).join('')}</div>
         ${ps.length?`<div class="pgrid">${memberChips(g)}</div>`:`<div class="note">No profiles yet — add some first.</div>`}
         <button class="btn btn-gold" style="margin-top:14px" onclick="saveGroupName()">Done</button>
       </div>`:''}
@@ -710,10 +788,10 @@ function rProfiles(){
   let addGSec='';
   if(addG){
     addGSec=`<div class="ebox">
-      <div style="margin-bottom:12px"><input class="inp" id="ngn" placeholder="Group name" maxlength="24"></div>
+      <div style="margin-bottom:12px"><input class="inp" id="ngn" value="${esc(newGroupDraft)}" placeholder="Group name" maxlength="24"></div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-gold" style="flex:1" onclick="saveNewGroup()">Create</button>
-        <button class="btn btn-ghost btn-sm" style="width:auto;padding:10px 16px" onclick="addG=false;render()">Cancel</button>
+        <button class="btn btn-ghost btn-sm" style="width:auto;padding:10px 16px" onclick="addG=false;newGroupDraft='';render()">Cancel</button>
       </div>
     </div>`;
   }
@@ -753,7 +831,7 @@ function rProfiles(){
     <div class="sec-h">Groups</div>
     <div class="stk g8">
       ${groupList}
-      ${!addG?`<div class="add-chip" onclick="addG=true;render()">+ New Group</div>`:addGSec}
+      ${!addG?`<div class="add-chip" onclick="addG=true;newGroupDraft='';render()">+ New Group</div>`:addGSec}
     </div>
 
     <div class="sec-h">Data</div>
@@ -787,7 +865,8 @@ function rS1(){
   const groupChips=groups.length?`<div class="gchips">${groups.map(g=>{
     const allIn=g.profileIds.every(id=>sel.includes(id));
     return`<div class="pchip gchip${allIn?' on':''}" onclick="toggleGroupSelect('${g.id}')">
-      <div class="pchip-name">👥 ${esc(g.name)}</div>
+      <div class="dot" style="width:18px;height:18px;background:${g.color||'var(--s3)'}"></div>
+      <div class="pchip-name">${esc(g.name)}</div>
       ${allIn?`<div class="pchip-ck">✓</div>`:''}
     </div>`;
   }).join('')}</div>`:'';
@@ -887,9 +966,17 @@ function rS2(){
         <div><div class="rlbl">White Guy</div><div class="rsub">Gets nothing — must guess if voted out</div></div>
         <label class="tog"><input type="checkbox" ${wg?'checked':''} onchange="togWG(this.checked)"><div class="ttrack"></div></label>
       </div>`:''}
+      ${!SS.blind&&civN>=1?`<div class="rrow">
+        <div><div class="rlbl">Mime</div><div class="rsub">A civilian who can only act, never speak the word</div></div>
+        <label class="tog"><input type="checkbox" ${SS.mime?'checked':''} onchange="SS.mime=this.checked;clampTags();render()"><div class="ttrack"></div></label>
+      </div>`:''}
+      ${!SS.blind&&(civN>=1)?`<div class="rrow${civN<2&&SS.mime&&!SS.ghost?' disabled':''}">
+        <div><div class="rlbl">Ghost</div><div class="rsub">A civilian who can still vote after being eliminated</div></div>
+        <label class="tog"><input type="checkbox" ${SS.ghost?'checked':''} ${civN<2&&SS.mime&&!SS.ghost?'disabled':''} onchange="SS.ghost=this.checked;clampTags();render()"><div class="ttrack"></div></label>
+      </div>`:''}
       ${mode!=='drawing'?`<div class="rrow">
         <div><div class="rlbl">Blind Mode</div><div class="rsub">Players see word only — no role shown</div></div>
-        <label class="tog"><input type="checkbox" ${SS.blind?'checked':''} onchange="SS.blind=this.checked;render()"><div class="ttrack"></div></label>
+        <label class="tog"><input type="checkbox" ${SS.blind?'checked':''} onchange="SS.blind=this.checked;if(SS.blind){SS.mime=false;SS.ghost=false;}render()"><div class="ttrack"></div></label>
       </div>`:''}
     </div>
     <div class="sp" style="min-height:20px"></div>
@@ -936,7 +1023,10 @@ function rAssign(){
     }else{
       wordSec=`<div class="cdiv"></div><div class="cnone">— no word —</div>`;
     }
-    cardInner=`<div class="clbl">You are</div><div class="crole">${rName}</div>${wordSec}`;
+    let tagSec='';
+    if(cur.tag==='mime')tagSec=`<div class="cdiv"></div><div class="ctag">🎭 You're also the Mime — act it out, never say the word.</div>`;
+    else if(cur.tag==='ghost')tagSec=`<div class="cdiv"></div><div class="ctag">👻 You're also the Ghost — if voted out, you still get a vote.</div>`;
+    cardInner=`<div class="clbl">You are</div><div class="crole">${rName}</div>${wordSec}${tagSec}`;
   }
   return`<div class="ascr">
     <div class="plbl">Pass to</div>
@@ -1027,6 +1117,7 @@ function rReveal(){
   }else{
     wSec=`<div style="font-size:12px;color:var(--t3);margin-top:10px">Had no word</div>`;
   }
+  if(re.tag==='ghost')wSec+=`<div class="ctag" style="margin-top:14px">👻 They were the Ghost — they still get a vote.</div>`;
   let action='';
   if(isWG)action=`<button class="btn btn-gold" onclick="nav('whiteguess')">They get to guess →</button>`;
   else if(win)action=`<button class="btn btn-gold" onclick="goToWin()">See Results →</button>`;
@@ -1147,7 +1238,16 @@ function rProfDetail(){
 document.addEventListener('DOMContentLoaded',()=>{
   render();
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(reg=>{
+      reg.addEventListener('updatefound',()=>{
+        const nw=reg.installing;if(!nw)return;
+        nw.addEventListener('statechange',()=>{
+          if(nw.state==='installed'&&navigator.serviceWorker.controller){
+            const b=document.getElementById('updateBanner');if(b)b.style.display='block';
+          }
+        });
+      });
+    }).catch(()=>{});
   }
 });
 </script>
