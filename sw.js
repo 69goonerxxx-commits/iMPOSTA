@@ -1,4 +1,4 @@
-const CACHE = 'imposta-v2';
+const CACHE = 'imposta-v3';
 const ASSETS = [
   './',
   './index.html',

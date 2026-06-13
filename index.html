@@ -282,43 +282,120 @@ const W={
     sports:[{w:'Basketball',d:'Handball'},{w:'Soccer',d:'Rugby'},{w:'Tennis',d:'Badminton'},{w:'Swimming',d:'Water Polo'},{w:'Baseball',d:'Cricket'},{w:'Golf',d:'Disc Golf'},{w:'Boxing',d:'Wrestling'},{w:'Cycling',d:'Skateboarding'},{w:'Running',d:'Race Walking'},{w:'Gymnastics',d:'Cheerleading'},{w:'Surfing',d:'Wakeboarding'},{w:'Hockey',d:'Lacrosse'},{w:'Skiing',d:'Snowboarding'},{w:'Archery',d:'Darts'},{w:'Fencing',d:'Karate'},{w:'Table Tennis',d:'Squash'},{w:'Rowing',d:'Kayaking'},{w:'Bowling',d:'Curling'},{w:'Weightlifting',d:'Powerlifting'},{w:'Volleyball',d:'Sepak Takraw'}],
     objects:[{w:'Chair',d:'Stool'},{w:'Table',d:'Desk'},{w:'Lamp',d:'Lantern'},{w:'Clock',d:'Stopwatch'},{w:'Bottle',d:'Flask'},{w:'Knife',d:'Scissors'},{w:'Mirror',d:'Glass'},{w:'Pillow',d:'Cushion'},{w:'Bag',d:'Backpack'},{w:'Pen',d:'Pencil'},{w:'Phone',d:'Tablet'},{w:'Camera',d:'Telescope'},{w:'Key',d:'Lock'},{w:'Hat',d:'Cap'},{w:'Shoes',d:'Sandals'},{w:'Glasses',d:'Goggles'},{w:'Umbrella',d:'Parasol'},{w:'Watch',d:'Bracelet'},{w:'Candle',d:'Torch'},{w:'Guitar',d:'Ukulele'}],
     places:[{w:'Beach',d:'Lake Shore'},{w:'Mountain',d:'Volcano'},{w:'Park',d:'Garden'},{w:'Mall',d:'Bazaar'},{w:'School',d:'Academy'},{w:'Hospital',d:'Clinic'},{w:'Airport',d:'Train Station'},{w:'Restaurant',d:'Cafe'},{w:'Library',d:'Bookstore'},{w:'Museum',d:'Gallery'},{w:'Hotel',d:'Inn'},{w:'Cinema',d:'Theater'},{w:'Church',d:'Temple'},{w:'Stadium',d:'Arena'},{w:'Forest',d:'Jungle'},{w:'Desert',d:'Savanna'},{w:'Island',d:'Peninsula'},{w:'Cave',d:'Mine'},{w:'Farm',d:'Ranch'},{w:'Lighthouse',d:'Watchtower'}],
-    movies:[{w:'Avengers',d:'Justice League'},{w:'Harry Potter',d:'Percy Jackson'},{w:'Squid Game',d:'Alice in Borderland'},{w:'Naruto',d:'Bleach'},{w:'Spider-Man',d:'Batman'},{w:'Titanic',d:'The Notebook'},{w:'The Office',d:'Parks and Recreation'},{w:'Friends',d:'How I Met Your Mother'},{w:'Breaking Bad',d:'Better Call Saul'},{w:'Game of Thrones',d:'The Witcher'},{w:'Shrek',d:'Kung Fu Panda'},{w:'Stranger Things',d:'Dark'},{w:'Attack on Titan',d:'Demon Slayer'},{w:'One Piece',d:'Fairy Tail'},{w:'Money Heist',d:'Prison Break'},{w:'The Hunger Games',d:'Maze Runner'},{w:'Inception',d:'Interstellar'},{w:'The Mandalorian',d:'The Book of Boba Fett'},{w:'Jujutsu Kaisen',d:'Chainsaw Man'},{w:'Wednesday',d:'You'}]
+    movies:[{w:'Avengers',d:'Justice League'},{w:'Harry Potter',d:'Percy Jackson'},{w:'Squid Game',d:'Alice in Borderland'},{w:'Naruto',d:'Bleach'},{w:'Spider-Man',d:'Batman'},{w:'Titanic',d:'The Notebook'},{w:'The Office',d:'Parks and Recreation'},{w:'Friends',d:'How I Met Your Mother'},{w:'Breaking Bad',d:'Better Call Saul'},{w:'Game of Thrones',d:'The Witcher'},{w:'Shrek',d:'Kung Fu Panda'},{w:'Stranger Things',d:'Dark'},{w:'Attack on Titan',d:'Demon Slayer'},{w:'One Piece',d:'Fairy Tail'},{w:'Money Heist',d:'Prison Break'},{w:'The Hunger Games',d:'Maze Runner'},{w:'Inception',d:'Interstellar'},{w:'The Mandalorian',d:'The Book of Boba Fett'},{w:'Jujutsu Kaisen',d:'Chainsaw Man'},{w:'Wednesday',d:'You'}],
+    tech:[{w:'Smartphone',d:'Tablet'},{w:'Laptop',d:'Desktop'},{w:'Bluetooth',d:'Wi-Fi'},{w:'App',d:'Software'},{w:'Password',d:'PIN'},{w:'Streaming',d:'Downloading'},{w:'Podcast',d:'Audiobook'},{w:'Selfie',d:'Portrait'},{w:'Emoji',d:'Sticker'},{w:'Algorithm',d:'Formula'},{w:'Robot',d:'Drone'},{w:'Virtual Reality',d:'Augmented Reality'},{w:'Cloud',d:'Server'},{w:'Keyboard',d:'Trackpad'},{w:'Headphones',d:'Earbuds'},{w:'Charger',d:'Battery Pack'},{w:'Screenshot',d:'Recording'},{w:'Search Engine',d:'Browser'},{w:'Antivirus',d:'Firewall'},{w:'Notification',d:'Alert'}],
+    hobbies:[{w:'Knitting',d:'Crocheting'},{w:'Painting',d:'Drawing'},{w:'Hiking',d:'Trekking'},{w:'Photography',d:'Videography'},{w:'Gaming',d:'Streaming'},{w:'Gardening',d:'Landscaping'},{w:'Cooking',d:'Baking'},{w:'Reading',d:'Journaling'},{w:'Dancing',d:'Choreography'},{w:'Fishing',d:'Hunting'},{w:'Yoga',d:'Meditation'},{w:'Woodworking',d:'Metalworking'},{w:'Skateboarding',d:'BMX'},{w:'Origami',d:'Calligraphy'},{w:'Cosplay',d:'Roleplay'},{w:'Bird Watching',d:'Bug Collecting'},{w:'Karaoke',d:'Open Mic'},{w:'Scrapbooking',d:'Collaging'},{w:'Candle Making',d:'Soap Making'},{w:'Rock Climbing',d:'Bouldering'}],
+    professions:[{w:'Doctor',d:'Nurse'},{w:'Teacher',d:'Professor'},{w:'Chef',d:'Baker'},{w:'Pilot',d:'Flight Attendant'},{w:'Lawyer',d:'Judge'},{w:'Architect',d:'Engineer'},{w:'Photographer',d:'Videographer'},{w:'Journalist',d:'Reporter'},{w:'Scientist',d:'Researcher'},{w:'Athlete',d:'Coach'},{w:'Artist',d:'Designer'},{w:'Musician',d:'Singer'},{w:'Actor',d:'Director'},{w:'Firefighter',d:'Paramedic'},{w:'Astronaut',d:'Cosmonaut'},{w:'Veterinarian',d:'Zookeeper'},{w:'Barista',d:'Bartender'},{w:'Mechanic',d:'Plumber'},{w:'Librarian',d:'Archivist'},{w:'Therapist',d:'Counselor'}]
   },
   drawing:{
     animals:[{w:'Dog',d:'Fox'},{w:'Cat',d:'Rabbit'},{w:'Fish',d:'Frog'},{w:'Bird',d:'Bat'},{w:'Elephant',d:'Hippo'},{w:'Monkey',d:'Gorilla'},{w:'Cow',d:'Horse'},{w:'Lion',d:'Tiger'},{w:'Penguin',d:'Duck'},{w:'Crab',d:'Lobster'},{w:'Butterfly',d:'Dragonfly'},{w:'Turtle',d:'Snail'},{w:'Shark',d:'Whale'},{w:'Bear',d:'Panda'},{w:'Octopus',d:'Jellyfish'}],
     food:[{w:'Pizza',d:'Pie'},{w:'Burger',d:'Sandwich'},{w:'Ice Cream',d:'Cupcake'},{w:'Apple',d:'Pear'},{w:'Banana',d:'Corn'},{w:'Donut',d:'Bagel'},{w:'Cake',d:'Bread'},{w:'Carrot',d:'Radish'},{w:'Cherry',d:'Strawberry'},{w:'Watermelon',d:'Orange'},{w:'Egg',d:'Lemon'},{w:'Cookie',d:'Cracker'},{w:'Lollipop',d:'Ice Pop'},{w:'Sushi',d:'Spring Roll'},{w:'Mushroom',d:'Broccoli'}],
     sports:[{w:'Basketball',d:'Volleyball'},{w:'Soccer Ball',d:'Football'},{w:'Tennis Racket',d:'Badminton Racket'},{w:'Baseball Bat',d:'Cricket Bat'},{w:'Golf Club',d:'Hockey Stick'},{w:'Boxing Gloves',d:'Karate Belt'},{w:'Skateboard',d:'Surfboard'},{w:'Bicycle',d:'Unicycle'},{w:'Bowling Pin',d:'Skittle'},{w:'Dartboard',d:'Archery Target'},{w:'Barbell',d:'Dumbbell'},{w:'Swimming Goggles',d:'Diving Mask'},{w:'Jump Rope',d:'Lasso'},{w:'Ice Skates',d:'Roller Blades'},{w:'Ping Pong Paddle',d:'Spatula'}],
     objects:[{w:'House',d:'Castle'},{w:'Car',d:'Bus'},{w:'Tree',d:'Cactus'},{w:'Sun',d:'Moon'},{w:'Star',d:'Diamond'},{w:'Cloud',d:'Wave'},{w:'Chair',d:'Throne'},{w:'Book',d:'Scroll'},{w:'Guitar',d:'Violin'},{w:'Clock',d:'Hourglass'},{w:'Hat',d:'Crown'},{w:'Key',d:'Lock'},{w:'Umbrella',d:'Parasol'},{w:'Candle',d:'Torch'},{w:'Bell',d:'Horn'}],
-    nature:[{w:'Ocean',d:'Lake'},{w:'Mountain',d:'Volcano'},{w:'Forest',d:'Jungle'},{w:'Desert',d:'Savanna'},{w:'Rainbow',d:'Aurora'},{w:'Waterfall',d:'Geyser'},{w:'Tornado',d:'Hurricane'},{w:'Cave',d:'Canyon'},{w:'Island',d:'Peninsula'},{w:'River',d:'Stream'},{w:'Sunset',d:'Sunrise'},{w:'Storm',d:'Fog'},{w:'Cliff',d:'Ravine'},{w:'Hot Spring',d:'Oasis'},{w:'Glacier',d:'Iceberg'}]
+    nature:[{w:'Ocean',d:'Lake'},{w:'Mountain',d:'Volcano'},{w:'Forest',d:'Jungle'},{w:'Desert',d:'Savanna'},{w:'Rainbow',d:'Aurora'},{w:'Waterfall',d:'Geyser'},{w:'Tornado',d:'Hurricane'},{w:'Cave',d:'Canyon'},{w:'Island',d:'Peninsula'},{w:'River',d:'Stream'},{w:'Sunset',d:'Sunrise'},{w:'Storm',d:'Fog'},{w:'Cliff',d:'Ravine'},{w:'Hot Spring',d:'Oasis'},{w:'Glacier',d:'Iceberg'}],
+    vehicles:[{w:'Car',d:'Van'},{w:'Bicycle',d:'Scooter'},{w:'Airplane',d:'Helicopter'},{w:'Ship',d:'Boat'},{w:'Train',d:'Subway'},{w:'Motorcycle',d:'Moped'},{w:'Rocket',d:'Shuttle'},{w:'Truck',d:'Tractor'},{w:'Hot Air Balloon',d:'Blimp'},{w:'Submarine',d:'Sailboat'},{w:'Skateboard',d:'Roller Skates'},{w:'Canoe',d:'Kayak'},{w:'Tank',d:'Jeep'},{w:'Spaceship',d:'UFO'},{w:'Ambulance',d:'Fire Truck'}],
+    fantasy:[{w:'Dragon',d:'Dinosaur'},{w:'Wizard',d:'Witch'},{w:'Castle',d:'Tower'},{w:'Sword',d:'Spear'},{w:'Shield',d:'Armor'},{w:'Potion',d:'Spell Book'},{w:'Elf',d:'Fairy'},{w:'Vampire',d:'Zombie'},{w:'Ghost',d:'Skeleton'},{w:'Mermaid',d:'Siren'},{w:'Robot',d:'Cyborg'},{w:'Alien',d:'Monster'},{w:'Magic Wand',d:'Staff'},{w:'Treasure Chest',d:'Coffin'},{w:'Crown',d:'Amulet'}]
   }
 };
 
 const PROMPTS=[
-  {b:'Describe your ideal day off',t:"Describe your ideal day off if you despised yourself"},
-  {b:'Give someone a compliment',t:"Give a compliment that's secretly an insult"},
-  {b:'Describe your perfect weekend',t:"Describe your weekend with zero social battery left"},
-  {b:'Pitch yourself for a job',t:"Pitch yourself for a job you're completely wrong for"},
-  {b:'Give a toast at a party',t:"Give a toast designed to make the guest of honor cry"},
-  {b:'Describe your hometown',t:"Describe your hometown to someone you want to scare off"},
-  {b:'Give someone directions',t:"Give directions designed to get someone completely lost"},
-  {b:'Describe what you look for in a friend',t:"Describe what you look for in a friend if you wanted enemies"},
-  {b:'Recommend a movie',t:"Recommend a movie as punishment"},
-  {b:'Give advice to someone starting college',t:"Give advice designed to ruin their college experience"},
-  {b:'Describe your ideal vacation',t:"Describe your ideal vacation if comfort was illegal"},
-  {b:'Introduce yourself at a party',t:"Introduce yourself at a party to clear the room"},
-  {b:'Pitch a business idea',t:"Pitch a business idea guaranteed to lose money"},
-  {b:'Describe your dream house',t:"Describe your dream house if you hated yourself"},
-  {b:'Recommend a gift for your best friend',t:"Recommend a gift designed to end a friendship"},
-  {b:'Give a motivational speech',t:"Give a speech that leaves everyone more hopeless"},
-  {b:'Describe your favorite hobby',t:"Describe your hobby if you wanted people to avoid you"},
-  {b:'Say something kind to cheer someone up',t:"Say something kind that would actually make things worse"},
-  {b:'Describe an ideal first date',t:"Describe a first date that guarantees no second one"},
-  {b:'Give a book recommendation',t:"Give a book recommendation as a passive-aggressive move"},
-  {b:'Describe what makes a good leader',t:"Describe a good leader if you admired dictators"},
-  {b:'Pitch a new TV show idea',t:"Pitch a show guaranteed to be cancelled after one episode"},
-  {b:'Describe your go-to comfort food',t:"Describe comfort food if comfort was the enemy"},
-  {b:'Give a review of your favorite restaurant',t:"Give a review designed to shut the restaurant down"},
-  {b:'Describe the best advice you ever received',t:"Describe advice that sounds wise but ruins everything"}
+  // SOCIAL
+  {b:'Give someone a compliment',t:"Give a compliment that's secretly an insult",cat:'social'},
+  {b:'Give a toast at a party',t:"Give a toast designed to make the guest of honor cry",cat:'social'},
+  {b:'Describe what you look for in a friend',t:"Describe what you look for in a friend if you wanted enemies",cat:'social'},
+  {b:'Introduce yourself at a party',t:"Introduce yourself at a party to clear the room",cat:'social'},
+  {b:'Recommend a gift for your best friend',t:"Recommend a gift designed to end a friendship",cat:'social'},
+  {b:'Say something kind to cheer someone up',t:"Say something kind that would actually make things worse",cat:'social'},
+  {b:'Describe an ideal first date',t:"Describe a first date that guarantees no second one",cat:'social'},
+  {b:'Introduce a friend to someone new',t:"Introduce a friend in a way that guarantees they make no new friends",cat:'social'},
+  {b:'Give advice to someone going through a breakup',t:"Give breakup advice that ensures they never date again",cat:'social'},
+  {b:'Describe your ideal group hangout',t:"Describe a hangout designed to slowly dissolve a friend group",cat:'social'},
+  {b:'Say something to make someone feel welcome',t:"Say something that makes someone feel deeply out of place",cat:'social'},
+  {b:'Hype up a friend before a big event',t:"Hype someone up in a way that makes them spiral instead",cat:'social'},
+  {b:'Describe what makes a good party',t:"Describe a party where everyone leaves early and regrets coming",cat:'social'},
+  {b:"Give a speech at your best friend's wedding",t:"Give a wedding speech that puts the marriage in immediate jeopardy",cat:'social'},
+  {b:'Comfort a friend who failed at something',t:"Comfort someone in a way that makes the failure feel permanent",cat:'social'},
+  {b:'Plan a surprise for someone you care about',t:"Plan a surprise that causes mild psychological damage",cat:'social'},
+  // CAREER
+  {b:'Pitch yourself for a job',t:"Pitch yourself for a job you're completely wrong for",cat:'career'},
+  {b:'Give advice to someone starting college',t:"Give advice designed to ruin their college experience",cat:'career'},
+  {b:'Pitch a business idea',t:"Pitch a business idea guaranteed to lose money",cat:'career'},
+  {b:'Describe what makes a good leader',t:"Describe a good leader if you admired dictators",cat:'career'},
+  {b:'Introduce yourself in a job interview',t:"Introduce yourself in a way that ends the interview in 30 seconds",cat:'career'},
+  {b:'Ask your boss for a raise',t:"Ask for a raise in a way that guarantees a pay cut instead",cat:'career'},
+  {b:'Write an out-of-office email',t:"Write an out-of-office email that concerns your entire team",cat:'career'},
+  {b:'Pitch a project idea to your team',t:"Pitch a project that makes everyone question your qualifications",cat:'career'},
+  {b:"Give a reference for a coworker",t:"Give a reference that politely ends someone's career",cat:'career'},
+  {b:'Describe your ideal work environment',t:"Describe a workplace where nothing gets done and morale is zero",cat:'career'},
+  {b:'Welcome a new employee to the team',t:"Welcome a new hire in a way that makes them regret accepting the job",cat:'career'},
+  {b:"Give feedback on someone's presentation",t:"Give feedback that permanently destroys someone's public speaking confidence",cat:'career'},
+  {b:'Write a LinkedIn post about an achievement',t:"Write a LinkedIn post so self-congratulatory that people unfollow you",cat:'career'},
+  {b:'Explain a gap in your resume',t:"Explain a resume gap in a way that creates far more questions",cat:'career'},
+  {b:'Negotiate a deal with a client',t:"Negotiate a deal that somehow benefits nobody, including you",cat:'career'},
+  {b:'Describe what you do for work',t:"Describe your job in a way that sounds immediately suspicious",cat:'career'},
+  // LIFE
+  {b:'Describe your ideal day off',t:"Describe your ideal day off if you despised yourself",cat:'life'},
+  {b:'Describe your perfect weekend',t:"Describe your weekend with zero social battery left",cat:'life'},
+  {b:'Describe your hometown',t:"Describe your hometown to someone you want to scare off",cat:'life'},
+  {b:'Describe your ideal vacation',t:"Describe your ideal vacation if comfort was illegal",cat:'life'},
+  {b:'Describe your dream house',t:"Describe your dream house if you hated yourself",cat:'life'},
+  {b:'Describe your favorite hobby',t:"Describe your hobby if you wanted people to avoid you",cat:'life'},
+  {b:'Describe your morning routine',t:"Describe a morning routine designed to ruin the rest of your day",cat:'life'},
+  {b:'Recommend a travel destination',t:"Recommend a travel destination to someone you want to suffer",cat:'life'},
+  {b:'Describe your perfect night in',t:"Describe a night in that slowly makes you question your life choices",cat:'life'},
+  {b:'Give tips for a healthy daily routine',t:"Give daily routine tips that sound healthy but quietly aren't",cat:'life'},
+  {b:'Describe your dream neighborhood',t:"Describe a neighborhood you would move to if you wanted to be miserable",cat:'life'},
+  {b:'Describe how you wind down after work',t:"Describe a wind-down routine that makes sleep completely impossible",cat:'life'},
+  {b:'Recommend something to do on a rainy day',t:"Recommend a rainy day activity that somehow makes everything worse",cat:'life'},
+  {b:'Describe your ideal living space',t:"Describe a living space that is quietly optimized for misery",cat:'life'},
+  {b:'Give advice on how to be more productive',t:"Give productivity advice that guarantees you get absolutely nothing done",cat:'life'},
+  // FOOD
+  {b:'Describe your go-to comfort food',t:"Describe comfort food if comfort was the enemy",cat:'food'},
+  {b:'Give a review of your favorite restaurant',t:"Give a review designed to shut the restaurant down",cat:'food'},
+  {b:'Describe your all-time favorite meal',t:"Describe your favorite meal to someone with a weak stomach",cat:'food'},
+  {b:"Recommend a dish to someone who's never tried it",t:"Recommend a dish designed to traumatize a first-timer",cat:'food'},
+  {b:'Describe the perfect snack',t:"Describe a snack that is in absolutely no way satisfying",cat:'food'},
+  {b:'Give a beginner cooking tip',t:"Give a cooking tip that quietly ruins the dish",cat:'food'},
+  {b:'Describe the best thing about your hometown food',t:"Describe local food to someone you want to never visit you",cat:'food'},
+  {b:'Recommend a comfort meal for a bad day',t:"Recommend comfort food that deepens the bad day",cat:'food'},
+  {b:'Describe your go-to breakfast',t:"Describe a breakfast that sets the worst possible tone for the day",cat:'food'},
+  {b:'Recommend a drink for a hot day',t:"Recommend a drink that sounds refreshing but very much is not",cat:'food'},
+  {b:"Describe the best meal you've ever cooked",t:"Describe a home-cooked meal in a way that kills everyone's appetite",cat:'food'},
+  {b:'Give advice on how to eat healthier',t:"Give diet advice that sounds reasonable but guarantees nothing changes",cat:'food'},
+  // SPICY
+  {b:"Share an opinion you'd defend in an argument",t:"Share an opinion so bad it clears the room in under a minute",cat:'spicy'},
+  {b:'Rank the seasons of the year',t:"Rank the seasons in a way that immediately starts a fight",cat:'spicy'},
+  {b:'Defend a food take most people disagree with',t:"Defend a food opinion that makes you sound genuinely unhinged",cat:'spicy'},
+  {b:'Share your controversial movie opinion',t:"Share a film opinion guaranteed to permanently end at least one friendship",cat:'spicy'},
+  {b:"Explain why you're right about something",t:"Explain why you're right in a way that proves you're completely wrong",cat:'spicy'},
+  {b:'Defend a habit others find weird',t:"Defend a habit in a way that makes everyone slowly back away",cat:'spicy'},
+  {b:'Share a take on social media',t:"Share a social media opinion so bad it becomes its own cautionary tale",cat:'spicy'},
+  {b:'Argue that something overrated is actually great',t:"Argue something overrated is great in a way that proves it isn't",cat:'spicy'},
+  {b:'Give your honest review of something everyone loves',t:"Tear apart something beloved in front of its most devoted fan",cat:'spicy'},
+  {b:'Explain why your taste in music is superior',t:"Explain your music taste in a way that makes everyone mute you",cat:'spicy'},
+  {b:'Defend a life choice others question',t:"Defend a life choice in a way that makes everyone quietly worry about you",cat:'spicy'},
+  {b:'Share your take on a popular trend',t:"Share a take on a trend so contrarian it doubles back to embarrassing",cat:'spicy'},
+  // WILD
+  {b:'Give someone directions',t:"Give directions designed to get someone completely lost",cat:'wild'},
+  {b:'Recommend a movie',t:"Recommend a movie as punishment",cat:'wild'},
+  {b:'Give a motivational speech',t:"Give a speech that leaves everyone more hopeless than before",cat:'wild'},
+  {b:'Give a book recommendation',t:"Give a book recommendation as a passive-aggressive move",cat:'wild'},
+  {b:'Pitch a new TV show idea',t:"Pitch a show guaranteed to be cancelled after one episode",cat:'wild'},
+  {b:'Describe the best advice you ever received',t:"Describe advice that sounds wise but ruins everything",cat:'wild'},
+  {b:'Narrate your own life like a nature documentary',t:"Narrate your life like a nature documentary where you are clearly the prey",cat:'wild'},
+  {b:'Write a horoscope for someone having a great week',t:"Write a horoscope guaranteed to ruin someone's week",cat:'wild'},
+  {b:'Give instructions for something very simple',t:"Give instructions that make a simple task completely impossible",cat:'wild'},
+  {b:'Describe yourself as a product for sale',t:"Describe yourself as a product permanently stuck at a 1-star rating",cat:'wild'},
+  {b:'Pitch yourself as a superhero',t:"Pitch a superhero whose powers only make things worse for everyone",cat:'wild'},
+  {b:'Leave a voicemail for someone you admire',t:"Leave a voicemail that results in you being immediately blocked",cat:'wild'},
+  {b:'Write a five-star review of something mundane',t:"Write a five-star review that somehow makes the thing sound awful",cat:'wild'},
+  {b:'Describe an alien visiting Earth for the first time',t:"Describe an alien visit that ends very badly for the alien",cat:'wild'},
+  {b:'Give a TED Talk on something completely pointless',t:"Give a TED Talk so bad it gets quietly removed from the internet",cat:'wild'},
+  {b:'Explain a conspiracy theory you just made up',t:"Explain a conspiracy theory with just enough detail to be unsettling",cat:'wild'},
+  {b:'Write your own epitaph',t:"Write an epitaph that makes everyone at the funeral uncomfortable",cat:'wild'},
+  {b:'Describe your life as a movie pitch',t:"Pitch your life story in a way no studio would ever greenlight",cat:'wild'},
+  {b:"Give a weather forecast for somewhere you've never been",t:"Give a weather forecast that makes the location sound uninhabitable",cat:'wild'},
+  {b:'Narrate a sports game you know nothing about',t:"Narrate a sports game in a way that confuses even the players",cat:'wild'},
 ];
 
 // ── STORAGE ──
@@ -351,9 +428,12 @@ function pickWord(mode,cat){
   addUsed(k,i);return pool[i];
 }
 function pickPrompt(){
-  const k='prompts';let used=gUsed(k);
-  let avail=PROMPTS.map((_,i)=>i).filter(i=>!used.includes(i));
-  if(!avail.length){resetUsed(k);avail=PROMPTS.map((_,i)=>i);}
+  const useAll=!SS.cat||SS.cat==='all';
+  const k=useAll?'prompts':`prompts_${SS.cat}`;
+  const eligible=useAll?PROMPTS.map((_,i)=>i):PROMPTS.map((p,i)=>p.cat===SS.cat?i:-1).filter(i=>i>=0);
+  let used=gUsed(k);
+  let avail=eligible.filter(i=>!used.includes(i));
+  if(!avail.length){resetUsed(k);avail=eligible;}
   const i=avail[Math.floor(Math.random()*avail.length)];
   addUsed(k,i);return PROMPTS[i];
 }
@@ -390,7 +470,7 @@ function render(){
   const inn=document.getElementById('inn');if(inn)SS.newName=inn.value;
   const ngn=document.getElementById('ngn');if(ngn)newGroupDraft=ngn.value;
   _lastEditId=editId;_lastEditGroupId=editGroupId;
-  const map={home:rHome,profiles:rProfiles,setup:rSetup,assignment:rAssign,gameinfo:rInfo,discussion:rDisc,voting:rVote,rolereveal:rReveal,whiteguess:rWGGuess,win:rWin,scoreboard:rScore,randpicker:rRandPicker,profdetail:rProfDetail};
+  const map={home:rHome,profiles:rProfiles,setup:rSetup,assignment:rAssign,promptreveal:rPromptReveal,gameinfo:rInfo,discussion:rDisc,voting:rVote,rolereveal:rReveal,whiteguess:rWGGuess,win:rWin,scoreboard:rScore,randpicker:rRandPicker,profdetail:rProfDetail};
   const fn=map[scr];
   if(fn)a.innerHTML=fn();else a.innerHTML=rHome();
 }
@@ -455,7 +535,7 @@ function startGame(){
   }
 
   GS={mode:rMode,wd,pd,roles,alive:[...sh],initImp:aImp,allImp,rand,randMode:randMode||null,aIdx:0,initN:total,players:ids,blind};
-  nav('assignment');
+  nav(rMode==='prompt'?'promptreveal':'assignment');
 }
 
 // ── WIN CHECK ──
@@ -658,7 +738,7 @@ function clampTags(){
 function adjImp(d){const max=SS.ids.length-(SS.wg?2:1);SS.imp=Math.max(0,Math.min(SS.imp+d,max));clampTags();render();}
 function togWG(v){SS.wg=v;SS.imp=Math.min(SS.imp,SS.ids.length-(v?2:1));clampTags();render();}
 function selCat(k){SS.cat=k;render();}
-function step2proceed(){if(SS.mode==='prompt')startGame();else{SS.step=3;render();}}
+function step2proceed(){SS.step=3;render();}
 
 // ── GAME ACTIONS ──
 function revealCard(){
@@ -893,7 +973,7 @@ function rSetup(){
 function rS1(){
   const ps=gP();const sel=SS.ids;
   const mLabel={classic:'Classic',prompt:'Prompt',drawing:'Drawing',randomizer:'Randomizer'}[SS.mode]||'';
-  const total=SS.mode==='prompt'||SS.mode==='randomizer'?2:3;
+  const total=SS.mode==='randomizer'?2:3;
 
   const groups=gG().filter(g=>g.profileIds.length>0);
   const groupChips=groups.length?`<div class="gchips">${groups.map(g=>{
@@ -949,7 +1029,7 @@ function rS1(){
 
 function rS2(){
   const{mode,ids,imp,wg,rand,randMode}=SS;const n=ids.length;
-  const total=mode==='prompt'||rand?2:3;
+  const total=rand?2:3;
   const mLabel={classic:'Classic',prompt:'Prompt',drawing:'Drawing',randomizer:'Randomizer'}[mode]||'';
 
   if(rand){
@@ -1020,10 +1100,36 @@ function rS2(){
 
 function rS3(){
   const{mode,cat}=SS;
+
+  if(mode==='prompt'){
+    const cats=[
+      {k:'all',i:'🎲',n:'All'},
+      {k:'social',i:'🎉',n:'Social'},
+      {k:'career',i:'💼',n:'Career'},
+      {k:'life',i:'🌍',n:'Life & Travel'},
+      {k:'food',i:'🍔',n:'Food'},
+      {k:'spicy',i:'🔥',n:'Hot Takes'},
+      {k:'wild',i:'🃏',n:'Wild Card'}
+    ];
+    return`<div class="scr">
+    <button class="bk" onclick="SS.step=2;render()">← Back</button>
+    ${stepBar(3)}
+    <div class="sh">Category</div>
+    <div class="ss">What kind of prompts?</div>
+    <div class="cgrid">
+      ${cats.map(c=>`<div class="ccard${cat===c.k?' on':''}" onclick="selCat('${c.k}')">
+        <div class="cico">${c.i}</div><div class="cname">${c.n}</div>
+      </div>`).join('')}
+    </div>
+    <div class="sp" style="min-height:20px"></div>
+    <button class="btn btn-gold" ${cat?'':'disabled'} onclick="startGame()">Start →</button>
+  </div>`;
+  }
+
   const cats=mode==='drawing'?[
-    {k:'animals',i:'🐾',n:'Animals'},{k:'food',i:'🍕',n:'Food'},{k:'sports',i:'⚽',n:'Sports'},{k:'objects',i:'📦',n:'Objects'},{k:'nature',i:'🌿',n:'Nature'}
+    {k:'animals',i:'🐾',n:'Animals'},{k:'food',i:'🍕',n:'Food'},{k:'sports',i:'⚽',n:'Sports'},{k:'objects',i:'📦',n:'Objects'},{k:'nature',i:'🌿',n:'Nature'},{k:'vehicles',i:'🚗',n:'Vehicles'},{k:'fantasy',i:'🐉',n:'Fantasy'}
   ]:[
-    {k:'animals',i:'🐾',n:'Animals'},{k:'food',i:'🍕',n:'Food'},{k:'sports',i:'⚽',n:'Sports'},{k:'objects',i:'📦',n:'Objects'},{k:'places',i:'📍',n:'Places'},{k:'movies',i:'🎬',n:'Movies & Shows'}
+    {k:'animals',i:'🐾',n:'Animals'},{k:'food',i:'🍕',n:'Food'},{k:'sports',i:'⚽',n:'Sports'},{k:'objects',i:'📦',n:'Objects'},{k:'places',i:'📍',n:'Places'},{k:'movies',i:'🎬',n:'Movies & Shows'},{k:'tech',i:'💻',n:'Tech'},{k:'hobbies',i:'🎨',n:'Hobbies'},{k:'professions',i:'👔',n:'Professions'}
   ];
   return`<div class="scr">
     <button class="bk" onclick="SS.step=2;render()">← Back</button>
@@ -1037,6 +1143,20 @@ function rS3(){
     </div>
     <div class="sp" style="min-height:20px"></div>
     <button class="btn btn-gold" ${cat?'':'disabled'} onclick="startGame()">Start →</button>
+  </div>`;
+}
+
+function rPromptReveal(){
+  const prompt=GS.pd?GS.pd.b:'';
+  return`<div class="scr">
+    <div class="sh">The Topic</div>
+    <div class="ss">Everyone in the room reads this</div>
+    <div class="icard" style="margin:8px 0 28px;padding:24px 20px;text-align:center">
+      <div style="font-size:22px;font-weight:700;line-height:1.35;color:var(--txt)">${esc(prompt)}</div>
+    </div>
+    <div class="note" style="margin-bottom:24px">Impostors will receive a different version. Don't say anything yet.</div>
+    <div class="sp"></div>
+    <button class="btn btn-gold" onclick="nav('assignment')">Pass & Assign →</button>
   </div>`;
 }
 
@@ -1200,10 +1320,26 @@ function rWin(){
     <div><div class="wname">${esc(p?p.name:'?')}</div><div class="wscore">${p?p.score||0:0} pts total</div></div>
     <div class="wpts">+${pts[id]||0}</div>
   </div>`}).join('');
+  const reveal=GS.roles.map(r=>{
+    const p=gp(r.pid);
+    const rName=r.role==='whiteguy'?'White Guy':r.role[0].toUpperCase()+r.role.slice(1);
+    const rClr=r.role==='impostor'?'var(--red)':r.role==='whiteguy'?'var(--t2)':'var(--gold)';
+    const wordText=r.role==='civilian'?(GS.pd?GS.pd.b:GS.wd?GS.wd.w:''):r.role==='impostor'?(GS.pd?GS.pd.t:GS.wd?GS.wd.d:''):'—';
+    return`<div class="witem">
+      ${avatar(p,'dot-v')}
+      <div style="flex:1;min-width:0">
+        <div class="wname">${esc(p?p.name:'?')}</div>
+        <div style="font-size:12px;color:${rClr};font-weight:600">${rName}</div>
+      </div>
+      <div style="font-size:12px;color:var(--t2);text-align:right;max-width:140px;word-break:break-word">${esc(wordText)}</div>
+    </div>`;
+  }).join('');
   return`<div class="wscr">
     <div class="wbig">${titles[winRes.type]||'GAME OVER'}</div>
     <div class="wsub">${subs[winRes.type]||''}</div>
     <div class="stk g8" style="width:100%;margin-bottom:28px">${items}</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;margin-bottom:10px;align-self:flex-start">Full Reveal</div>
+    <div class="stk g8" style="width:100%;margin-bottom:28px">${reveal}</div>
     <div class="sp"></div>
     <div class="stk g8" style="width:100%">
       <button class="btn btn-gold" onclick="nav('scoreboard')">View Scoreboard</button>
