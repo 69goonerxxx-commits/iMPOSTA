@@ -535,7 +535,7 @@ function startGame(){
   }
 
   GS={mode:rMode,wd,pd,roles,alive:[...sh],initImp:aImp,allImp,rand,randMode:randMode||null,aIdx:0,initN:total,players:ids,blind};
-  nav(rMode==='prompt'?'promptreveal':'assignment');
+  nav('assignment');
 }
 
 // ── WIN CHECK ──
@@ -747,7 +747,7 @@ function revealCard(){
   c.classList.add('flipped');
   setTimeout(()=>{const b=document.querySelector('.done-btn');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}},660);
 }
-function advAssign(){GS.aIdx++;if(GS.aIdx>=GS.roles.length)nav('gameinfo');else nav('assignment');}
+function advAssign(){GS.aIdx++;if(GS.aIdx>=GS.roles.length){nav(GS.mode==='prompt'?'promptreveal':'gameinfo');}else nav('assignment');}
 function selVote(id){voteTarget=voteTarget===id?null:id;render();}
 function confirmVote(){
   if(!voteTarget)return;
@@ -1156,7 +1156,7 @@ function rPromptReveal(){
     </div>
     <div class="note" style="margin-bottom:24px">Impostors will receive a different version. Don't say anything yet.</div>
     <div class="sp"></div>
-    <button class="btn btn-gold" onclick="nav('assignment')">Pass & Assign →</button>
+    <button class="btn btn-gold" onclick="nav('gameinfo')">Start Discussion →</button>
   </div>`;
 }
 
