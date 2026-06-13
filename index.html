@@ -231,12 +231,46 @@ input:checked+.ttrack::after{transform:translateX(20px);background:#0C0808}
 /* PWA update banner */
 .update-banner{position:fixed;left:16px;right:16px;bottom:16px;background:var(--gold);color:var(--bg);font-family:var(--fb);font-weight:600;font-size:14px;text-align:center;padding:14px 16px;border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer;display:none;z-index:9999;-webkit-user-select:none;user-select:none}
 .update-banner:active{opacity:.8}
+/* PWA install banner */
+.install-banner{position:fixed;left:16px;right:16px;bottom:16px;background:var(--s2);border:1px solid var(--bdr2);color:var(--txt);font-family:var(--fb);font-size:14px;padding:12px 14px;border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.5);display:none;z-index:9998;align-items:center;gap:10px;-webkit-user-select:none;user-select:none}
+.install-banner.show{display:flex}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <div id="updateBanner" class="update-banner" onclick="location.reload()">↻ New version available — tap to refresh</div>
+<div id="installBanner" class="install-banner">
+  <span style="flex:1;font-weight:600">Add IMPOSTA to home screen</span>
+  <button class="btn btn-gold btn-sm" style="width:auto;padding:10px 14px;white-space:nowrap;flex-shrink:0" onclick="doInstall()">Install</button>
+  <button class="btn btn-ghost btn-sm" style="width:auto;padding:10px 12px;flex-shrink:0" onclick="dismissInstall()">✕</button>
+</div>
 <script>
+// ── PWA INSTALL ──
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  const b = document.getElementById('installBanner');
+  if (b) b.classList.add('show');
+});
+window.addEventListener('appinstalled', () => {
+  deferredInstall = null;
+  const b = document.getElementById('installBanner');
+  if (b) b.classList.remove('show');
+});
+function doInstall() {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  deferredInstall.userChoice.then(() => {
+    deferredInstall = null;
+    const b = document.getElementById('installBanner');
+    if (b) b.classList.remove('show');
+  });
+}
+function dismissInstall() {
+  document.getElementById('installBanner').classList.remove('show');
+}
+
 // ── COLORS ──
 const COLORS=['#E8B84B','#C63535','#4A8FD4','#4CAF50','#9B59B6','#FF7043','#E91E8C','#00BCD4','#26A69A','#FF5722','#7986CB','#A1887F'];
 
