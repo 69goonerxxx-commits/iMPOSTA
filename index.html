@@ -179,6 +179,8 @@ input:checked+.ttrack::after{transform:translateX(20px);background:#0C0808}
 
 /* GAME INFO */
 .icard{background:var(--glift);border:1px solid var(--bdr);border-radius:var(--rl);padding:24px}
+.tinput{width:100%;background:var(--s2);border:1px solid var(--bdr2);border-radius:8px;color:var(--txt);font-family:var(--fb);font-size:14px;padding:10px 12px;box-sizing:border-box;outline:none;}
+.tinput:focus{border-color:var(--gold)}
 .irow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)}
 .irow:last-child{border-bottom:none}
 .ik{font-size:12px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
@@ -399,7 +401,7 @@ const PROMPTS=[
 ];
 
 // ── STORAGE ──
-const SK={p:'imposta_p',u:'imposta_u',g:'imposta_g',lg:'imposta_lastgroup'};
+const SK={p:'imposta_p',u:'imposta_u',g:'imposta_g',lg:'imposta_lastgroup',cp:'imposta_cp',hist:'imposta_hist'};
 function gP(){try{return JSON.parse(localStorage.getItem(SK.p))||[];}catch{return[];}}
 function sP(a){localStorage.setItem(SK.p,JSON.stringify(a));}
 function gG(){try{return JSON.parse(localStorage.getItem(SK.g))||[];}catch{return[];}}
@@ -410,6 +412,15 @@ function gUsed(k){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};return 
 function addUsed(k,i){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};a[k]=[...(a[k]||[]),i];localStorage.setItem(SK.u,JSON.stringify(a));}catch{}}
 function resetUsed(k){try{const a=JSON.parse(localStorage.getItem(SK.u))||{};a[k]=[];localStorage.setItem(SK.u,JSON.stringify(a));}catch{}}
 function addScore(id,pts){const ps=gP();const p=ps.find(x=>x.id===id);if(p){p.score=(p.score||0)+pts;sP(ps);}}
+function gCP(){try{return JSON.parse(localStorage.getItem(SK.cp))||[];}catch{return[];}}
+function sCP(a){localStorage.setItem(SK.cp,JSON.stringify(a));}
+function gHist(){try{return JSON.parse(localStorage.getItem(SK.hist))||[];}catch{return[];}}
+function sHist(a){localStorage.setItem(SK.hist,JSON.stringify(a.slice(-20)));}
+function saveHistory(res){
+  if(!res)return;
+  const entry={ts:Date.now(),mode:GS.mode,cat:GS.cat||null,result:res.type,winners:res.winners||[],impostors:GS.roles.filter(r=>r.role==='impostor').map(r=>r.pid),word:GS.wd?GS.wd.w:GS.pd?GS.pd.b:null};
+  const h=gHist();h.push(entry);sHist(h);
+}
 
 // ── UTILS ──
 function uid(){return Math.random().toString(36).slice(2,10);}
@@ -429,6 +440,15 @@ function pickWord(mode,cat){
 }
 function pickPrompt(){
   const useAll=!SS.cat||SS.cat==='all';
+  const isCustom=SS.cat==='custom';
+  if(isCustom){
+    const cp=gCP();if(!cp.length)return{b:'Describe your day',t:'Describe a day you would never want to have',cat:'custom'};
+    const k='prompts_custom';let used=gUsed(k);
+    let avail=cp.map((_,i)=>i).filter(i=>!used.includes(i));
+    if(!avail.length){resetUsed(k);avail=cp.map((_,i)=>i);}
+    const i=avail[Math.floor(Math.random()*avail.length)];
+    addUsed(k,i);return{...cp[i],cat:'custom'};
+  }
   const k=useAll?'prompts':`prompts_${SS.cat}`;
   const eligible=useAll?PROMPTS.map((_,i)=>i):PROMPTS.map((p,i)=>p.cat===SS.cat?i:-1).filter(i=>i>=0);
   let used=gUsed(k);
@@ -440,12 +460,13 @@ function pickPrompt(){
 
 // ── APP STATE ──
 let scr='home';
-let SS={step:1,mode:null,ids:[],imp:1,wg:false,mime:false,ghost:false,rand:false,cat:null,addP:false,newName:'',newColor:COLORS[0]};
+let SS={step:1,mode:null,ids:[],imp:1,wg:false,mime:false,ghost:false,rand:false,cat:null,voteMode:'live',addP:false,newName:'',newColor:COLORS[0]};
 let GS=null;
 let voteTarget=null;
 let pendingVoted=null;
 let winRes=null;
 let scoresApplied=false;
+let phoneVoteRevealed=false;
 let editId=null;
 let editSt={name:'',color:'',photo:null};
 let detailId=null;
@@ -470,7 +491,7 @@ function render(){
   const inn=document.getElementById('inn');if(inn)SS.newName=inn.value;
   const ngn=document.getElementById('ngn');if(ngn)newGroupDraft=ngn.value;
   _lastEditId=editId;_lastEditGroupId=editGroupId;
-  const map={home:rHome,profiles:rProfiles,setup:rSetup,assignment:rAssign,promptreveal:rPromptReveal,gameinfo:rInfo,discussion:rDisc,voting:rVote,rolereveal:rReveal,whiteguess:rWGGuess,win:rWin,scoreboard:rScore,randpicker:rRandPicker,profdetail:rProfDetail};
+  const map={home:rHome,profiles:rProfiles,setup:rSetup,assignment:rAssign,promptreveal:rPromptReveal,gameinfo:rInfo,discussion:rDisc,voting:rVote,phonevote:rPhoneVote,rolereveal:rReveal,whiteguess:rWGGuess,win:rWin,scoreboard:rScore,randpicker:rRandPicker,profdetail:rProfDetail,customprompts:rManagePrompts,history:rHistory};
   const fn=map[scr];
   if(fn)a.innerHTML=fn();else a.innerHTML=rHome();
 }
@@ -481,11 +502,11 @@ function preloadLastGroup(){
   const g=gG().find(x=>x.id===lg);if(!g)return[];
   const ps=gP();return g.profileIds.filter(id=>ps.some(p=>p.id===id));
 }
-function startSetup(mode){SS={step:1,mode,ids:preloadLastGroup(),imp:1,wg:false,mime:false,ghost:false,rand:false,randMode:null,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
-function startSetupRand(rm){SS={step:1,mode:'randomizer',ids:preloadLastGroup(),imp:1,wg:false,mime:false,ghost:false,rand:true,randMode:rm,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
+function startSetup(mode){SS={step:1,mode,ids:preloadLastGroup(),imp:1,wg:false,mime:false,ghost:false,rand:false,randMode:null,cat:null,voteMode:'live',addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
+function startSetupRand(rm){SS={step:1,mode:'randomizer',ids:preloadLastGroup(),imp:1,wg:false,mime:false,ghost:false,rand:true,randMode:rm,cat:null,voteMode:'live',addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};nav('setup');}
 
 function startGame(){
-  const{mode,ids,imp,wg,rand,cat,blind,randMode}=SS;
+  const{mode,ids,imp,wg,rand,cat,blind,randMode,voteMode}=SS;
   winRes=null;pendingVoted=null;voteTarget=null;scoresApplied=false;
   const sh=shuffle([...ids]);const total=sh.length;
   let roles=[];let wd=null;let pd=null;
@@ -534,7 +555,7 @@ function startGame(){
     if(SS.ghost&&ci<civIdx.length)roles[civIdx[ci++]].tag='ghost';
   }
 
-  GS={mode:rMode,wd,pd,roles,alive:[...sh],initImp:aImp,allImp,rand,randMode:randMode||null,aIdx:0,initN:total,players:ids,blind};
+  GS={mode:rMode,wd,pd,roles,alive:[...sh],initImp:aImp,allImp,rand,randMode:randMode||null,aIdx:0,initN:total,players:ids,blind,cat:cat||null,voteMode:voteMode||'live',phoneVotes:[],voteIdx:0,ghostVoters:[]};
   nav('assignment');
 }
 
@@ -552,12 +573,12 @@ function checkWin(votedId,wgResult){
 
   if(ai.length===0&&aw.length===0){
     if(initImp===0){
-      return alive.length<=2?{type:'surv_win',winners:[...alive]}:null;
+      return alive.length<=2?{type:'surv_win',winners:[...alive,...(GS.ghostVoters||[])]}:null;
     }
-    return{type:'civ_win',winners:[...alive]};}
+    return{type:'civ_win',winners:[...alive,...(GS.ghostVoters||[])]};}
 
   if(initImp===0){
-    return alive.length<=2?{type:'surv_win',winners:[...alive]}:null;}
+    return alive.length<=2?{type:'surv_win',winners:[...alive,...(GS.ghostVoters||[])]}:null;}
 
   if(initImp===1&&!allImp){
     if(ai.length===1&&vr&&vr.role==='civilian'){
@@ -598,6 +619,7 @@ function applyStats(res){
     p.roleStats[role].games++;
   });
   sP(ps);
+  saveHistory(res);
 }
 function winrateStr(p){const w=p.wins||0;const l=p.losses||0;const g=w+l;return g?Math.round(w/g*100)+'%':'—';}
 function openDetail(id){detailId=id;nav('profdetail');}
@@ -753,6 +775,8 @@ function confirmVote(){
   if(!voteTarget)return;
   pendingVoted=voteTarget;voteTarget=null;
   GS.alive=GS.alive.filter(id=>id!==pendingVoted);
+  const vRole=GS.roles.find(r=>r.pid===pendingVoted);
+  if(vRole&&vRole.tag==='ghost'){if(!GS.ghostVoters)GS.ghostVoters=[];GS.ghostVoters.push(pendingVoted);}
   vib(25);
   nav('rolereveal');
 }
@@ -780,7 +804,7 @@ function submitGuess(){
 }
 function playAgain(){
   const ids=[...(GS.players||[])];const isRand=GS.rand;
-  SS={step:1,mode:isRand?'randomizer':GS.mode,ids,imp:1,wg:false,mime:false,ghost:false,rand:isRand,randMode:isRand?GS.randMode:null,cat:null,addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};
+  SS={step:1,mode:isRand?'randomizer':GS.mode,ids,imp:1,wg:false,mime:false,ghost:false,rand:isRand,randMode:isRand?GS.randMode:null,cat:null,voteMode:'live',addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:false};
   nav('setup');
 }
 
@@ -800,6 +824,67 @@ function rRandPicker(){
   </div>`;
 }
 
+function quickRematch(){
+  const imp=GS.initImp;
+  const hasWG=GS.roles.some(r=>r.role==='whiteguy');
+  const hasMime=GS.roles.some(r=>r.tag==='mime');
+  const hasGhost=GS.roles.some(r=>r.tag==='ghost');
+  SS={step:1,mode:GS.rand?'randomizer':GS.mode,ids:[...(GS.players||[])],imp,wg:hasWG,mime:hasMime,ghost:hasGhost,rand:GS.rand,randMode:GS.randMode||null,cat:GS.cat,voteMode:GS.voteMode||'live',addP:false,newName:'',newColor:COLORS[0],newPhoto:null,blind:GS.blind};
+  startGame();
+}
+
+// ── PHONE VOTING ──
+function startPhoneVote(){
+  GS.phoneVotes=[];GS.voteIdx=0;
+  GS.phoneVoters=[...GS.alive,...(GS.ghostVoters||[])];
+  phoneVoteRevealed=false;nav('phonevote');
+}
+function submitPhoneVote(targetId){
+  const voterId=GS.phoneVoters[GS.voteIdx];
+  GS.phoneVotes.push({voterId,targetId});
+  GS.voteIdx++;
+  if(GS.voteIdx>=GS.phoneVoters.length){tallyPhoneVotes();}
+  else{phoneVoteRevealed=false;nav('phonevote');}
+}
+function tallyPhoneVotes(){
+  const tally={};
+  GS.phoneVotes.forEach(v=>{tally[v.targetId]=(tally[v.targetId]||0)+1;});
+  let maxV=0;let top=[];
+  Object.entries(tally).forEach(([id,c])=>{if(c>maxV){maxV=c;top=[id];}else if(c===maxV)top.push(id);});
+  const vid=top[Math.floor(Math.random()*top.length)];
+  pendingVoted=vid;voteTarget=null;
+  GS.alive=GS.alive.filter(id=>id!==vid);
+  const vRole=GS.roles.find(r=>r.pid===vid);
+  if(vRole&&vRole.tag==='ghost'){if(!GS.ghostVoters)GS.ghostVoters=[];GS.ghostVoters.push(vid);}
+  vib(25);nav('rolereveal');
+}
+function rPhoneVote(){
+  const voters=GS.phoneVoters||GS.alive;
+  const voter=voters[GS.voteIdx];
+  const p=gProf(voter);
+  const isGhost=(GS.ghostVoters||[]).includes(voter);
+  if(!phoneVoteRevealed){
+    return`<div class="scr" style="align-items:center;justify-content:center">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:8px">Pass to</div>
+      <div class="sh" style="text-align:center">${esc(p?p.name:'?')}</div>
+      <div class="ss" style="text-align:center">${GS.voteIdx+1} of ${voters.length}${isGhost?' · 👻 Ghost vote':''}</div>
+      <div class="icard" style="margin-top:28px;padding:40px 24px;text-align:center;cursor:pointer" onclick="phoneVoteRevealed=true;render()">
+        <div style="font-size:32px;margin-bottom:12px">🗳️</div>
+        <div style="font-weight:600;font-size:15px;color:var(--txt)">Tap to vote</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:4px">Only you will see this</div>
+      </div>
+    </div>`;
+  }
+  const candidates=GS.alive.filter(id=>id!==voter);
+  const items=candidates.map(id=>{const cp=gProf(id);return`<div class="vitem" onclick="submitPhoneVote('${id}');vib(15)">${avatar(cp,'dot-v')}<div class="vname">${esc(cp?cp.name:'?')}</div></div>`;}).join('');
+  return`<div class="scr">
+    <div class="sh">Vote</div>
+    <div class="ss">${esc(p?p.name:'?')} — tap your pick</div>
+    <div class="stk g8" style="margin-bottom:20px">${items}</div>
+    <div class="sp"></div>
+  </div>`;
+}
+
 function rHome(){
   return`<div class="scr">
     <div class="logo">IMPOSTA</div>
@@ -813,6 +898,10 @@ function rHome(){
     <div class="hbtns">
       <button class="btn btn-surf" onclick="nav('profiles')">👤 Profiles</button>
       <button class="btn btn-surf" onclick="nav('scoreboard')">🏆 Scores</button>
+    </div>
+    <div class="hbtns" style="margin-top:8px">
+      <button class="btn btn-surf" onclick="nav('customprompts')">✏️ Prompts</button>
+      <button class="btn btn-surf" onclick="nav('history')">📋 History</button>
     </div>
   </div>`;
 }
@@ -1050,6 +1139,10 @@ function rS2(){
         <div><div class="rlbl">Blind Mode</div><div class="rsub">Players see word only — no role shown</div></div>
         <label class="tog"><input type="checkbox" ${SS.blind?'checked':''} onchange="SS.blind=this.checked;render()"><div class="ttrack"></div></label>
       </div></div>`:''}
+      <div class="stk g12" style="margin-top:16px"><div class="rrow">
+        <div><div class="rlbl">Anonymous Voting</div><div class="rsub">${SS.voteMode==='phone'?'Phone passes around — nobody sees others votes':'Everyone votes on a shared screen'}</div></div>
+        <label class="tog"><input type="checkbox" ${SS.voteMode==='phone'?'checked':''} onchange="SS.voteMode=this.checked?'phone':'live';render()"><div class="ttrack"></div></label>
+      </div></div>
       <div class="sp" style="min-height:20px"></div>
       <button class="btn btn-gold" onclick="startGame()">Start →</button>
     </div>`;
@@ -1092,6 +1185,10 @@ function rS2(){
         <div><div class="rlbl">Blind Mode</div><div class="rsub">Players see word only — no role shown</div></div>
         <label class="tog"><input type="checkbox" ${SS.blind?'checked':''} onchange="SS.blind=this.checked;if(SS.blind){SS.mime=false;SS.ghost=false;}render()"><div class="ttrack"></div></label>
       </div>`:''}
+    <div class="rrow">
+        <div><div class="rlbl">Anonymous Voting</div><div class="rsub">${SS.voteMode==='phone'?'Phone passes around — nobody sees others votes':'Everyone votes on a shared screen'}</div></div>
+        <label class="tog"><input type="checkbox" ${SS.voteMode==='phone'?'checked':''} onchange="SS.voteMode=this.checked?'phone':'live';render()"><div class="ttrack"></div></label>
+      </div>
     </div>
     <div class="sp" style="min-height:20px"></div>
     <button class="btn btn-gold" onclick="step2proceed()">Continue →</button>
@@ -1102,6 +1199,7 @@ function rS3(){
   const{mode,cat}=SS;
 
   if(mode==='prompt'){
+    const cp=gCP();
     const cats=[
       {k:'all',i:'🎲',n:'All'},
       {k:'social',i:'🎉',n:'Social'},
@@ -1109,7 +1207,8 @@ function rS3(){
       {k:'life',i:'🌍',n:'Life & Travel'},
       {k:'food',i:'🍔',n:'Food'},
       {k:'spicy',i:'🔥',n:'Hot Takes'},
-      {k:'wild',i:'🃏',n:'Wild Card'}
+      {k:'wild',i:'🃏',n:'Wild Card'},
+      ...(cp.length?[{k:'custom',i:'✏️',n:`Custom (${cp.length})`}]:[])
     ];
     return`<div class="scr">
     <button class="bk" onclick="SS.step=2;render()">← Back</button>
@@ -1173,7 +1272,7 @@ function rAssign(){
   }else{
     let wordSec='';
     if(role==='civilian'||role==='impostor'){
-      wordSec=`<div class="cdiv"></div><div class="cwlbl">${role==='impostor'?'Your decoy':'The word'}</div><div class="cword">${esc(cur.word||'')}</div>`;
+      wordSec=`<div class="cdiv"></div><div class="cwlbl">${role==='impostor'?(GS.pd?'Your twist':'Your decoy'):(GS.pd?'The prompt':'The word')}</div><div class="cword">${esc(cur.word||'')}</div>`;
     }else{
       wordSec=`<div class="cdiv"></div><div class="cnone">— no word —</div>`;
     }
@@ -1231,12 +1330,15 @@ function rInfo(){
 function rDisc(){
   const{alive}=GS;
   const pills=alive.map(id=>{const p=gProf(id);return`<div class="ppill">${avatar(p,'dot-sm')}<div style="font-size:14px;font-weight:500">${esc(p?p.name:'?')}</div></div>`;}).join('');
+  const ghosts=(GS.ghostVoters||[]);
+  const ghostNote=ghosts.length?`<div style="font-size:12px;color:var(--t3);margin-bottom:16px;text-align:center">${ghosts.map(id=>{const p=gProf(id);return`👻 ${esc(p?p.name:'?')}`;}).join(' · ')} still ${ghosts.length===1?'votes':'vote'}</div>`:'';
   return`<div class="scr">
     <div class="bigtxt">DISCUSS</div>
     <div style="font-size:13px;color:var(--t3);margin-bottom:24px">${alive.length} remaining</div>
     <div class="stk g8" style="margin-bottom:24px">${pills}</div>
+    ${ghostNote}
     <div class="sp"></div>
-    <button class="btn btn-gold" onclick="nav('voting')">Ready to Vote →</button>
+    <button class="btn btn-gold" onclick="GS.voteMode==='phone'?startPhoneVote():nav('voting')">Ready to Vote →</button>
   </div>`;
 }
 
@@ -1267,7 +1369,7 @@ function rReveal(){
   if(win)winRes=win;
   let wSec='';
   if(role==='civilian'||role==='impostor'){
-    wSec=`<div class="rwlbl">${role==='impostor'?'Their decoy':'The word'}</div><div class="rword">${esc(word||'')}</div>`;
+    wSec=`<div class="rwlbl">${role==='impostor'?(GS.pd?'Their twist':'Their decoy'):(GS.pd?'The prompt':'The word')}</div><div class="rword">${esc(word||'')}</div>`;
   }else{
     wSec=`<div style="font-size:12px;color:var(--t3);margin-top:10px">Had no word</div>`;
   }
@@ -1324,7 +1426,7 @@ function rWin(){
     const p=gp(r.pid);
     const rName=r.role==='whiteguy'?'White Guy':r.role[0].toUpperCase()+r.role.slice(1);
     const rClr=r.role==='impostor'?'var(--red)':r.role==='whiteguy'?'var(--t2)':'var(--gold)';
-    const wordText=r.role==='civilian'?(GS.pd?GS.pd.b:GS.wd?GS.wd.w:''):r.role==='impostor'?(GS.pd?GS.pd.t:GS.wd?GS.wd.d:''):'—';
+    const wordText=r.role!=='whiteguy'?(r.word||''):'—';
     return`<div class="witem">
       ${avatar(p,'dot-v')}
       <div style="flex:1;min-width:0">
@@ -1343,6 +1445,7 @@ function rWin(){
     <div class="sp"></div>
     <div class="stk g8" style="width:100%">
       <button class="btn btn-gold" onclick="nav('scoreboard')">View Scoreboard</button>
+      <button class="btn btn-gold" style="background:var(--s2);border:1px solid var(--gold);color:var(--gold)" onclick="quickRematch()">⚡ Rematch</button>
       <button class="btn btn-surf" onclick="playAgain()">Play Again</button>
       <button class="btn btn-ghost" onclick="nav('home')">Back to Home</button>
     </div>
@@ -1420,6 +1523,69 @@ document.addEventListener('DOMContentLoaded',()=>{
     }).catch(()=>{});
   }
 });
+
+// ── CUSTOM PROMPTS ──
+let cpEdit={b:'',t:''};
+function rManagePrompts(){
+  const cp=gCP();
+  const items=cp.length?cp.map((p,i)=>`<div class="icard" style="padding:14px 16px;margin-bottom:8px">
+    <div style="font-size:13px;font-weight:600;color:var(--txt);margin-bottom:4px">${esc(p.b)}</div>
+    <div style="font-size:12px;color:var(--red);margin-bottom:10px">${esc(p.t)}</div>
+    <button class="btn btn-ghost btn-sm" style="width:auto;padding:8px 14px;font-size:12px" onclick="delCP(${i})">Delete</button>
+  </div>`).join(''):`<div style="color:var(--t3);font-size:13px;text-align:center;padding:32px 0">No custom prompts yet</div>`;
+  return`<div class="scr">
+    <button class="bk" onclick="nav('home')">← Back</button>
+    <div class="sh">Custom Prompts</div>
+    <div class="ss">Your own prompt pairs</div>
+    <div class="icard" style="padding:16px;margin-bottom:16px">
+      <div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:6px">Civilian prompt</div>
+      <input id="cpB" class="tinput" placeholder="e.g. Describe your dream job" value="${esc(cpEdit.b)}" oninput="cpEdit.b=this.value" style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--red);font-weight:600;margin-bottom:6px">Impostor prompt</div>
+      <input id="cpT" class="tinput" placeholder="e.g. Describe a job you'd quit in a day" value="${esc(cpEdit.t)}" oninput="cpEdit.t=this.value" style="margin-bottom:14px">
+      <button class="btn btn-gold btn-sm" style="width:auto;padding:10px 18px" onclick="addCP()">Add →</button>
+    </div>
+    <div>${items}</div>
+    <div class="sp"></div>
+  </div>`;
+}
+function addCP(){
+  const b=(cpEdit.b||'').trim();const t=(cpEdit.t||'').trim();
+  if(!b||!t)return;
+  const cp=gCP();cp.push({b,t});sCP(cp);
+  cpEdit={b:'',t:''};render();
+}
+function delCP(i){const cp=gCP();cp.splice(i,1);sCP(cp);render();}
+
+// ── HISTORY ──
+function rHistory(){
+  const hist=gHist().slice().reverse();
+  const modeLabel={classic:'Classic',prompt:'Prompt',drawing:'Drawing',randomizer:'Randomizer'};
+  const resultLabel={civ_win:'Civilians win',imp_win:'Impostor wins',solo_win:'Impostor wins',wg_win:'White Guy wins',surv_win:'Civilians survive'};
+  const resultClr={civ_win:'var(--gold)',imp_win:'var(--red)',solo_win:'var(--red)',wg_win:'var(--t2)',surv_win:'var(--gold)'};
+  if(!hist.length)return`<div class="scr"><button class="bk" onclick="nav('home')">← Back</button><div class="sh">History</div><div style="color:var(--t3);font-size:13px;text-align:center;padding:48px 0">No games played yet</div></div>`;
+  const items=hist.map(h=>{
+    const d=new Date(h.ts);
+    const ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const ts=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    const winners=h.winners.map(id=>{const p=gProf(id);return p?p.name:'?';}).join(', ');
+    return`<div class="icard" style="padding:14px 16px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:700;color:var(--txt)">${modeLabel[h.mode]||h.mode}${h.cat&&h.cat!=='all'?' · '+h.cat:''}</div>
+        <div style="font-size:11px;color:var(--t3)">${ds} ${ts}</div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:${resultClr[h.result]||'var(--t2)'};margin-bottom:4px">${resultLabel[h.result]||h.result}</div>
+      ${winners?`<div style="font-size:12px;color:var(--t2)">${esc(winners)}</div>`:''}
+      ${h.word?`<div style="font-size:11px;color:var(--t3);margin-top:2px">Word: ${esc(h.word)}</div>`:''}
+    </div>`;
+  }).join('');
+  return`<div class="scr">
+    <button class="bk" onclick="nav('home')">← Back</button>
+    <div class="sh">History</div>
+    <div class="ss">Last ${hist.length} game${hist.length!==1?'s':''}</div>
+    ${items}
+    <div class="sp"></div>
+  </div>`;
+}
 </script>
 </body>
 </html>
